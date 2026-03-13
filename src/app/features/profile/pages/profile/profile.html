@@ -1,0 +1,281 @@
+<div class="profile-page">
+
+  <!-- Hero header -->
+  <div class="profile-hero">
+    <div class="hero-inner">
+      <div class="avatar-wrap">
+        <div class="avatar">{{ initials }}</div>
+        <button class="avatar-edit"><mat-icon>photo_camera</mat-icon></button>
+      </div>
+      <div class="hero-info">
+        <h1>{{ profile.firstName }} {{ profile.lastName }}</h1>
+        <span class="hero-email"><mat-icon>email</mat-icon> {{ profile.email }}</span>
+        <span class="member-badge"><mat-icon>star</mat-icon> Member since Jan 2025</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-body">
+
+    <!-- Sidebar nav -->
+    <nav class="profile-nav">
+      <button class="nav-item" [class.active]="activeTab() === 'profile'" (click)="activeTab.set('profile')">
+        <mat-icon>person</mat-icon> Personal Info
+      </button>
+      <button class="nav-item" [class.active]="activeTab() === 'password'" (click)="activeTab.set('password')">
+        <mat-icon>lock</mat-icon> Password
+      </button>
+      <button class="nav-item" [class.active]="activeTab() === 'addresses'" (click)="activeTab.set('addresses')">
+        <mat-icon>location_on</mat-icon> Addresses
+      </button>
+      <button class="nav-item" [class.active]="activeTab() === 'preferences'" (click)="activeTab.set('preferences')">
+        <mat-icon>notifications</mat-icon> Notifications
+      </button>
+      <div class="nav-divider"></div>
+      <a routerLink="/orders" class="nav-item">
+        <mat-icon>receipt_long</mat-icon> My Orders
+      </a>
+      <button class="nav-item danger">
+        <mat-icon>logout</mat-icon> Sign Out
+      </button>
+    </nav>
+
+    <!-- Content -->
+    <div class="profile-content">
+
+      <!-- ── PERSONAL INFO ── -->
+      <div class="content-card" *ngIf="activeTab() === 'profile'">
+        <div class="card-header">
+          <div>
+            <h2>Personal Information</h2>
+            <p>Update your name, email and contact details.</p>
+          </div>
+          <div class="saved-toast" *ngIf="savedProfile()">
+            <mat-icon>check_circle</mat-icon> Saved!
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>First Name</label>
+            <div class="input-wrap"><mat-icon>badge</mat-icon><input type="text" [(ngModel)]="profile.firstName" /></div>
+          </div>
+          <div class="field">
+            <label>Last Name</label>
+            <div class="input-wrap"><mat-icon>badge</mat-icon><input type="text" [(ngModel)]="profile.lastName" /></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email Address</label>
+          <div class="input-wrap"><mat-icon>email</mat-icon><input type="email" [(ngModel)]="profile.email" /></div>
+        </div>
+
+        <div class="field">
+          <label>Phone Number</label>
+          <div class="input-wrap"><mat-icon>phone</mat-icon><input type="tel" [(ngModel)]="profile.phone" /></div>
+        </div>
+
+        <div class="card-actions">
+          <button class="save-btn" (click)="saveProfile()">
+            <mat-icon>save</mat-icon> Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PASSWORD ── -->
+      <div class="content-card" *ngIf="activeTab() === 'password'">
+        <div class="card-header">
+          <div>
+            <h2>Change Password</h2>
+            <p>Use a strong password you don't use elsewhere.</p>
+          </div>
+          <div class="saved-toast" *ngIf="savedPassword()">
+            <mat-icon>check_circle</mat-icon> Password updated!
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Current Password</label>
+          <div class="input-wrap">
+            <mat-icon>lock</mat-icon>
+            <input [type]="showCurrentPwd() ? 'text' : 'password'" [(ngModel)]="passwords.current" placeholder="Enter current password" />
+            <button class="eye-btn" (click)="showCurrentPwd.update(v => !v)">
+              <mat-icon>{{ showCurrentPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>New Password</label>
+          <div class="input-wrap">
+            <mat-icon>lock_open</mat-icon>
+            <input [type]="showNewPwd() ? 'text' : 'password'" [(ngModel)]="passwords.newPwd" placeholder="Minimum 8 characters" />
+            <button class="eye-btn" (click)="showNewPwd.update(v => !v)">
+              <mat-icon>{{ showNewPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          <!-- Strength meter -->
+          <div class="strength-meter" *ngIf="passwords.newPwd">
+            <div class="strength-bar">
+              <div class="strength-fill" [style.width]="pwdStrength.width" [style.background]="pwdStrength.color"></div>
+            </div>
+            <span class="strength-label" [style.color]="pwdStrength.color">{{ pwdStrength.label }}</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Confirm New Password</label>
+          <div class="input-wrap">
+            <mat-icon>lock_open</mat-icon>
+            <input [type]="showConfirmPwd() ? 'text' : 'password'" [(ngModel)]="passwords.confirm" placeholder="Repeat new password" />
+            <button class="eye-btn" (click)="showConfirmPwd.update(v => !v)">
+              <mat-icon>{{ showConfirmPwd() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="error-msg" *ngIf="pwdError()">
+          <mat-icon>error_outline</mat-icon> {{ pwdError() }}
+        </div>
+
+        <div class="card-actions">
+          <button class="save-btn" (click)="savePassword()">
+            <mat-icon>lock</mat-icon> Update Password
+          </button>
+        </div>
+      </div>
+
+      <!-- ── ADDRESSES ── -->
+      <div class="content-card" *ngIf="activeTab() === 'addresses'">
+        <div class="card-header">
+          <div>
+            <h2>Saved Addresses</h2>
+            <p>Manage your delivery addresses for faster checkout.</p>
+          </div>
+          <button class="add-addr-btn" (click)="addingAddress.set(true)" *ngIf="!addingAddress()">
+            <mat-icon>add</mat-icon> Add Address
+          </button>
+        </div>
+
+        <!-- Address list -->
+        <div class="address-list">
+          <div class="address-card" *ngFor="let addr of addresses()" [class.default]="addr.isDefault">
+            <div class="addr-header">
+              <span class="addr-label"><mat-icon>{{ addr.label === 'Home' ? 'home' : 'business' }}</mat-icon> {{ addr.label || 'Address' }}</span>
+              <span class="default-badge" *ngIf="addr.isDefault">Default</span>
+            </div>
+            <p class="addr-text">{{ addr.street }}</p>
+            <p class="addr-text">{{ addr.city }}, {{ addr.county }} {{ addr.postalCode }}</p>
+            <p class="addr-text">{{ addr.country }}</p>
+            <div class="addr-actions">
+              <button class="addr-btn" (click)="setDefault(addr.id)" *ngIf="!addr.isDefault">
+                <mat-icon>check_circle_outline</mat-icon> Set Default
+              </button>
+              <button class="addr-btn danger" (click)="removeAddress(addr.id)" *ngIf="!addr.isDefault">
+                <mat-icon>delete_outline</mat-icon> Remove
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add address form -->
+        <div class="add-addr-form" *ngIf="addingAddress()">
+          <h3>New Address</h3>
+          <div class="field-row">
+            <div class="field">
+              <label>Label (e.g. Home, Office)</label>
+              <input type="text" [(ngModel)]="newAddress.label" placeholder="Home" />
+            </div>
+            <div class="field">
+              <label>Country</label>
+              <select [(ngModel)]="newAddress.country">
+                <option>Kenya</option><option>Uganda</option><option>Tanzania</option><option>Rwanda</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Street Address *</label>
+            <input type="text" [(ngModel)]="newAddress.street" placeholder="123 Main Street, Apt 2" />
+          </div>
+          <div class="field-row">
+            <div class="field"><label>City *</label><input type="text" [(ngModel)]="newAddress.city" placeholder="Nairobi" /></div>
+            <div class="field"><label>County</label><input type="text" [(ngModel)]="newAddress.county" placeholder="Nairobi County" /></div>
+          </div>
+          <div class="field">
+            <label>Postal Code</label>
+            <input type="text" [(ngModel)]="newAddress.postalCode" placeholder="00100" />
+          </div>
+          <div class="form-actions">
+            <button class="cancel-btn" (click)="addingAddress.set(false)">Cancel</button>
+            <button class="save-btn" (click)="addAddress()"><mat-icon>save</mat-icon> Save Address</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── NOTIFICATIONS ── -->
+      <div class="content-card" *ngIf="activeTab() === 'preferences'">
+        <div class="card-header">
+          <div>
+            <h2>Notification Preferences</h2>
+            <p>Choose what updates you want to receive.</p>
+          </div>
+        </div>
+
+        <div class="pref-list">
+          <div class="pref-item">
+            <div class="pref-icon email-icon"><mat-icon>email</mat-icon></div>
+            <div class="pref-info">
+              <span class="pref-title">Newsletter</span>
+              <span class="pref-desc">Weekly deals, new arrivals and style tips</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="preferences.newsletter" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="pref-item">
+            <div class="pref-icon order-icon"><mat-icon>local_shipping</mat-icon></div>
+            <div class="pref-info">
+              <span class="pref-title">Order Updates</span>
+              <span class="pref-desc">Shipping confirmations and delivery alerts</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="preferences.orderUpdates" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="pref-item">
+            <div class="pref-icon promo-icon"><mat-icon>local_offer</mat-icon></div>
+            <div class="pref-info">
+              <span class="pref-title">Promotions & Offers</span>
+              <span class="pref-desc">Flash sales, coupons and exclusive discounts</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="preferences.promotions" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="pref-item">
+            <div class="pref-icon sms-icon"><mat-icon>sms</mat-icon></div>
+            <div class="pref-info">
+              <span class="pref-title">SMS Alerts</span>
+              <span class="pref-desc">Text message notifications for orders</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="preferences.smsAlerts" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="save-btn" (click)="savePreferences()">
+            <mat-icon>save</mat-icon> Save Preferences
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

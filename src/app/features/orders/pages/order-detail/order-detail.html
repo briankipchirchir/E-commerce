@@ -1,0 +1,104 @@
+<div class="od-page" *ngIf="order() as o">
+
+  <!-- Header -->
+  <div class="od-header">
+    <div class="od-header-inner">
+      <a routerLink="/orders" class="back-link"><mat-icon>arrow_back</mat-icon> My Orders</a>
+      <div class="od-title-block">
+        <h1>{{ o.orderNumber }}</h1>
+        <span class="od-date">Placed on {{ o.date }}</span>
+      </div>
+      <div class="od-status-badge" [style.background]="statusColor + '18'" [style.color]="statusColor" [style.border-color]="statusColor + '40'">
+        <mat-icon>{{ statusIcon }}</mat-icon>
+        {{ o.status | titlecase }}
+      </div>
+    </div>
+  </div>
+
+  <div class="od-body">
+
+    <!-- Timeline -->
+    <div class="timeline-card">
+      <h2><mat-icon>timeline</mat-icon> Order Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-item" *ngFor="let step of o.timeline; let last = last" [class.done]="step.done" [class.last]="last">
+          <div class="timeline-icon"><mat-icon>{{ step.icon }}</mat-icon></div>
+          <div class="timeline-line" *ngIf="!last"></div>
+          <div class="timeline-content">
+            <span class="tl-status">{{ step.status }}</span>
+            <span class="tl-date">{{ step.date }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="od-right">
+
+      <!-- Items -->
+      <div class="items-card">
+        <h2><mat-icon>inventory_2</mat-icon> Items ({{ o.items.length }})</h2>
+        <div class="order-items">
+          <div class="order-item" *ngFor="let item of o.items">
+            <div class="item-img"><mat-icon>{{ iconMap[item.image] || 'inventory_2' }}</mat-icon></div>
+            <div class="item-info">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-cat">{{ item.category }}</span>
+              <span class="item-qty">Qty: {{ item.quantity }}</span>
+            </div>
+            <div class="item-price">
+              <span class="price-total">${{ (item.price * item.quantity).toFixed(2) }}</span>
+              <span class="price-unit" *ngIf="item.quantity > 1">${{ item.price.toFixed(2) }} each</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-card">
+        <h2><mat-icon>receipt_long</mat-icon> Summary</h2>
+        <div class="summary-rows">
+          <div class="sum-row"><span>Subtotal</span><span>${{ o.subtotal.toFixed(2) }}</span></div>
+          <div class="sum-row"><span>Shipping</span><span class="free-tag" *ngIf="o.shipping === 0">FREE</span><span *ngIf="o.shipping > 0">${{ o.shipping.toFixed(2) }}</span></div>
+          <div class="sum-row"><span>Tax</span><span>${{ o.tax.toFixed(2) }}</span></div>
+          <div class="sum-divider"></div>
+          <div class="sum-row total"><span>Total</span><span>${{ o.total.toFixed(2) }}</span></div>
+        </div>
+      </div>
+
+      <!-- Info cards row -->
+      <div class="info-row">
+        <div class="info-card">
+          <div class="info-icon"><mat-icon>location_on</mat-icon></div>
+          <div>
+            <h4>Delivery Address</h4>
+            <p>{{ o.address }}</p>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon"><mat-icon>payment</mat-icon></div>
+          <div>
+            <h4>Payment Method</h4>
+            <p>{{ o.payment }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="od-actions">
+        <button class="action-btn" *ngIf="o.status === 'DELIVERED'">
+          <mat-icon>star_rate</mat-icon> Write a Review
+        </button>
+        <button class="action-btn" *ngIf="o.status === 'DELIVERED'">
+          <mat-icon>replay</mat-icon> Buy Again
+        </button>
+        <button class="action-btn danger" *ngIf="o.status === 'PENDING' || o.status === 'PROCESSING'">
+          <mat-icon>cancel</mat-icon> Cancel Order
+        </button>
+        <button class="action-btn">
+          <mat-icon>help_outline</mat-icon> Get Help
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

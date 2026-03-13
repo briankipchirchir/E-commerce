@@ -1,0 +1,160 @@
+<div class="pf-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="back-row">
+      <a routerLink="/admin/products" class="back-link"><mat-icon>arrow_back</mat-icon> Products</a>
+    </div>
+    <div class="header-main">
+      <div>
+        <h1>{{ isEdit() ? 'Edit Product' : 'Add New Product' }}</h1>
+        <p>{{ isEdit() ? 'Update product details below' : 'Fill in the details to add a new product' }}</p>
+      </div>
+      <div class="header-actions">
+        <button class="cancel-btn" (click)="cancel()">Cancel</button>
+        <button class="save-btn" (click)="save()" [disabled]="!isValid || saving()">
+          <span *ngIf="!saving() && !saved()"><mat-icon>save</mat-icon> {{ isEdit() ? 'Save Changes' : 'Add Product' }}</span>
+          <span *ngIf="saving()" class="loading-row"><span class="spinner"></span> Saving...</span>
+          <span *ngIf="saved()"><mat-icon>check</mat-icon> Saved!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading()">
+    <mat-icon class="spin">autorenew</mat-icon> Loading product...
+  </div>
+
+  <div class="pf-body" *ngIf="!loading()">
+
+    <!-- Left: main form -->
+    <div class="pf-left">
+
+      <!-- Basic info -->
+      <div class="form-card">
+        <h2><mat-icon>info_outline</mat-icon> Basic Information</h2>
+
+        <div class="field">
+          <label>Product Name *</label>
+          <input type="text" [(ngModel)]="form.name" placeholder="e.g. Wireless Noise-Cancelling Headphones" />
+        </div>
+
+        <div class="field">
+          <label>Full Description</label>
+          <textarea [(ngModel)]="form.description" rows="5" placeholder="Detailed product description..."></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Category *</label>
+            <select [(ngModel)]="form.categoryId">
+              <option [ngValue]="null">Select category</option>
+              <option *ngFor="let c of categories()" [ngValue]="c.id">{{ c.name }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Brand</label>
+            <input type="text" [(ngModel)]="form.brand" placeholder="e.g. Samsung, Nike..." />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>SKU</label>
+            <input type="text" [(ngModel)]="form.sku" placeholder="e.g. WH-1000XM5" />
+          </div>
+          <div class="field">
+            <label>Featured</label>
+            <label class="toggle-wrap">
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="form.featured" />
+                <span class="slider"></span>
+              </label>
+              <span class="toggle-label">{{ form.featured ? 'Featured' : 'Standard' }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="form-card">
+        <h2><mat-icon>payments</mat-icon> Pricing & Stock</h2>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Sale Price ($) *</label>
+            <div class="price-input">
+              <span>$</span>
+              <input type="number" [(ngModel)]="form.price" placeholder="0.00" min="0" step="0.01" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Original Price ($) <span class="optional">optional</span></label>
+            <div class="price-input">
+              <span>$</span>
+              <input type="number" [(ngModel)]="form.originalPrice" placeholder="0.00" min="0" step="0.01" />
+            </div>
+          </div>
+        </div>
+
+        <div class="discount-preview" *ngIf="discount > 0">
+          <mat-icon>local_offer</mat-icon>
+          Discount: <strong>{{ discount }}% off</strong>
+        </div>
+
+        <div class="field">
+          <label>Stock Quantity *</label>
+          <input type="number" [(ngModel)]="form.stockQuantity" placeholder="0" min="0" />
+          <span class="field-hint" *ngIf="form.stockQuantity !== null && form.stockQuantity <= 10">
+            <mat-icon>warning_amber</mat-icon> Low stock warning will appear on product page
+          </span>
+        </div>
+      </div>
+
+      <!-- Images -->
+      <div class="form-card">
+        <h2><mat-icon>photo_library</mat-icon> Product Images</h2>
+        <p class="field-hint">Enter image URLs (from Unsplash, S3, etc.)</p>
+        <div class="field" *ngFor="let img of form.images; let i = index; trackBy: trackByIndex">
+          <div class="image-url-row">
+            <input type="text" [ngModel]="form.images[i]"
+              (ngModelChange)="form.images[i] = $event"
+              placeholder="https://images.unsplash.com/..." />
+            <button class="remove-img-btn" (click)="removeImageField(i)" *ngIf="form.images.length > 1">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <img *ngIf="form.images[i]" [src]="form.images[i]" class="img-preview" alt="preview" />
+        </div>
+        <button class="add-img-btn" (click)="addImageField()">
+          <mat-icon>add</mat-icon> Add Another Image
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right: preview -->
+    <div class="pf-right">
+      <div class="preview-card">
+        <h3><mat-icon>preview</mat-icon> Preview</h3>
+        <div class="preview-product">
+          <div class="preview-img">
+            <img *ngIf="form.images[0]" [src]="form.images[0]" alt="preview" />
+            <mat-icon *ngIf="!form.images[0]">inventory_2</mat-icon>
+            <span class="preview-badge" *ngIf="form.featured" style="background:#00529b">Featured</span>
+          </div>
+          <div class="preview-body">
+            <span class="preview-cat">{{ getCategoryName() }}</span>
+            <h4>{{ form.name || 'Product Name' }}</h4>
+            <div class="preview-price">
+              <span class="p-price">${{ (form.price || 0).toFixed(2) }}</span>
+              <span class="p-orig" *ngIf="form.originalPrice">${{ form.originalPrice.toFixed(2) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

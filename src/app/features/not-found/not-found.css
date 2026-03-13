@@ -1,0 +1,115 @@
+.nf-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.nf-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 64px 48px;
+  text-align: center;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+}
+
+.nf-code {
+  font-size: 96px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00529b, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -4px;
+}
+
+.nf-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.nf-icon mat-icon { font-size: 36px; color: #94a3b8; }
+
+.nf-card h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 12px;
+}
+
+.nf-card p {
+  font-size: 15px;
+  color: #64748b;
+  margin: 0 0 36px;
+  line-height: 1.6;
+}
+
+.nf-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.btn-home {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #00529b;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(0,82,155,0.3);
+}
+
+.btn-home:hover { background: #003d75; transform: translateY(-1px); }
+.btn-home mat-icon { font-size: 18px; }
+
+.btn-shop {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px solid #e2e8f0;
+  color: #475569;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-shop:hover { border-color: #00529b; color: #00529b; }
+.btn-shop mat-icon { font-size: 18px; }
+
+.nf-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 13.5px;
+}
+
+.nf-links a { color: #00529b; text-decoration: none; font-weight: 600; }
+.nf-links a:hover { text-decoration: underline; }
+.nf-links span { color: #cbd5e1; }
+
+@media (max-width: 480px) { .nf-card { padding: 40px 24px; } .nf-code { font-size: 72px; } }

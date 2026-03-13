@@ -1,0 +1,86 @@
+<div class="acat-page">
+  <div class="page-header">
+    <div><h1>Categories</h1><p>Manage product categories</p></div>
+    <button class="add-btn" (click)="openAdd()"><mat-icon>add</mat-icon> Add Category</button>
+  </div>
+
+  <!-- Category grid -->
+  <div class="cat-grid">
+    <div class="cat-card" *ngFor="let c of categories()" [class.inactive]="!c.isActive">
+      <div class="cat-icon-wrap"><mat-icon>{{ c.icon }}</mat-icon></div>
+      <div class="cat-body">
+        <div class="cat-header-row">
+          <h3>{{ c.name }}</h3>
+          <span class="cat-status" [class.active]="c.isActive">{{ c.isActive ? 'Active' : 'Inactive' }}</span>
+        </div>
+        <p class="cat-desc">{{ c.description }}</p>
+        <div class="cat-meta">
+          <span class="cat-slug">/{{ c.slug }}</span>
+          <span class="cat-count"><mat-icon>inventory_2</mat-icon> {{ c.productCount }} products</span>
+        </div>
+      </div>
+      <div class="cat-actions">
+        <label class="toggle">
+          <input type="checkbox" [checked]="c.isActive" (change)="toggleActive(c.id)" />
+          <span class="slider"></span>
+        </label>
+        <button class="act-btn edit" (click)="openEdit(c)"><mat-icon>edit</mat-icon></button>
+        <button class="act-btn delete" (click)="confirmDelete(c.id)"><mat-icon>delete_outline</mat-icon></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit form modal -->
+  <div class="modal-overlay" *ngIf="showForm()" (click)="showForm.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ editingId() ? 'Edit Category' : 'New Category' }}</h3>
+        <button class="close-btn" (click)="showForm.set(false)"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="field">
+        <label>Name *</label>
+        <input type="text" [(ngModel)]="form.name" placeholder="e.g. Electronics" />
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description" rows="3" placeholder="Brief description..."></textarea>
+      </div>
+      <div class="field">
+        <label>Icon</label>
+        <div class="icon-picker">
+          <button *ngFor="let i of icons" class="icon-opt" [class.selected]="form.icon === i" (click)="form.icon = i">
+            <mat-icon>{{ i }}</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="field toggle-field">
+        <label>Active</label>
+        <label class="toggle">
+          <input type="checkbox" [(ngModel)]="form.isActive" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="showForm.set(false)">Cancel</button>
+        <button class="save-btn" (click)="save()" [disabled]="!form.name">
+          <mat-icon>save</mat-icon> {{ editingId() ? 'Save Changes' : 'Add Category' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirm -->
+  <div class="modal-overlay" *ngIf="deleteConfirmId()" (click)="deleteConfirmId.set(null)">
+    <div class="modal small" (click)="$event.stopPropagation()">
+      <div class="del-icon"><mat-icon>delete_forever</mat-icon></div>
+      <h3>Delete Category?</h3>
+      <p>Products in this category will not be deleted but will be uncategorised.</p>
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="deleteConfirmId.set(null)">Cancel</button>
+        <button class="delete-btn" (click)="deleteCategory()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>

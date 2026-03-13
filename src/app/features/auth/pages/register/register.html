@@ -1,0 +1,157 @@
+<div class="auth-page">
+
+  <!-- Left panel: branding -->
+  <div class="auth-left">
+    <div class="auth-left-inner">
+      <a routerLink="/products" class="back-link">
+        <mat-icon>arrow_back</mat-icon> Back to shop
+      </a>
+
+      <div class="brand">
+        <span class="brand-name">ShopSmart</span>
+      </div>
+
+      <h1>Join thousands of happy shoppers</h1>
+      <p>Create your free account and start shopping today.</p>
+
+      <ul class="perks">
+        <li>
+          <div class="perk-icon"><mat-icon>local_shipping</mat-icon></div>
+          <div>
+            <strong>Free delivery</strong>
+            <span>On all orders over $50</span>
+          </div>
+        </li>
+        <li>
+          <div class="perk-icon"><mat-icon>replay</mat-icon></div>
+          <div>
+            <strong>30-day returns</strong>
+            <span>No questions asked</span>
+          </div>
+        </li>
+        <li>
+          <div class="perk-icon"><mat-icon>verified_user</mat-icon></div>
+          <div>
+            <strong>Secure payments</strong>
+            <span>256-bit SSL encryption</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Right panel: form -->
+  <div class="auth-right">
+    <div class="form-card">
+
+      <div class="form-header">
+        <h2>Create account</h2>
+        <p>Already have an account? <a routerLink="/auth/login">Sign in</a></p>
+      </div>
+
+      <!-- Error -->
+      <div class="error-alert" *ngIf="error">
+        <mat-icon>error_outline</mat-icon>
+        {{ error }}
+      </div>
+
+      <!-- Name row -->
+      <div class="field-row">
+        <div class="field" [class.has-error]="error && !firstName">
+          <label>First Name</label>
+          <div class="input-wrap">
+            <mat-icon>person_outline</mat-icon>
+            <input
+              type="text"
+              [(ngModel)]="firstName"
+              placeholder="Alex"
+              autocomplete="given-name"
+            />
+          </div>
+        </div>
+
+        <div class="field" [class.has-error]="error && !lastName">
+          <label>Last Name</label>
+          <div class="input-wrap">
+            <mat-icon>person_outline</mat-icon>
+            <input
+              type="text"
+              [(ngModel)]="lastName"
+              placeholder="Johnson"
+              autocomplete="family-name"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="field" [class.has-error]="error && !email">
+        <label>Email address</label>
+        <div class="input-wrap">
+          <mat-icon>mail_outline</mat-icon>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="alex@example.com"
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="field" [class.has-error]="error && !password">
+        <label>Password</label>
+        <div class="input-wrap">
+          <mat-icon>lock_outline</mat-icon>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Min. 8 characters"
+            autocomplete="new-password"
+          />
+          <button class="toggle-pw" type="button" (click)="showPassword = !showPassword">
+            <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        <!-- Strength meter -->
+        <div class="strength-bar" *ngIf="password">
+          <div class="strength-track">
+            <div class="strength-fill" [style.width.%]="strengthPercent" [class]="strengthClass"></div>
+          </div>
+          <span class="strength-label" [class]="strengthClass">{{ strengthLabel }}</span>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <label class="terms-check">
+        <input type="checkbox" [(ngModel)]="agreedToTerms" />
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </label>
+
+      <!-- Submit -->
+      <button class="submit-btn" (click)="onSubmit()" [disabled]="loading">
+        <span *ngIf="!loading">Create Account</span>
+        <span *ngIf="loading" class="loading-row">
+          <span class="spinner"></span> Creating account...
+        </span>
+      </button>
+
+      <!-- Divider -->
+      <div class="divider"><span>or sign up with</span></div>
+
+      <!-- Social -->
+      <div class="social-row">
+        <button class="social-btn">
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="18" />
+          Google
+        </button>
+        <button class="social-btn">
+          <mat-icon style="color:#1877f2">facebook</mat-icon>
+          Facebook
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

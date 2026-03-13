@@ -1,0 +1,38 @@
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="footer-logo">ShopSmart</span>
+      <p>Your one-stop shop for everything you need.</p>
+    </div>
+    <div class="footer-links">
+      <div class="link-group">
+        <h4>Shop</h4>
+        <a routerLink="/products">All Products</a>
+        <a routerLink="/products" [queryParams]="{category:'Electronics'}">Electronics</a>
+        <a routerLink="/products" [queryParams]="{category:'Clothing'}">Clothing</a>
+        <a routerLink="/products" [queryParams]="{category:'Accessories'}">Accessories</a>
+      </div>
+      <div class="link-group">
+        <h4>Account</h4>
+        <a routerLink="/auth/login">Sign In</a>
+        <a routerLink="/auth/register">Register</a>
+        <a routerLink="/orders">My Orders</a>
+        <a routerLink="/cart">My Cart</a>
+      </div>
+      <div class="link-group">
+        <h4>Support</h4>
+        <a href="#">Help Center</a>
+        <a href="#">Returns</a>
+        <a href="#">Track Order</a>
+        <a href="#">Contact Us</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; {{ year }} ShopSmart. All rights reserved.</span>
+    <div class="status">
+      <span class="status-dot"></span>
+      All systems operational
+    </div>
+  </div>
+</footer>

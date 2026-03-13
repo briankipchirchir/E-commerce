@@ -1,0 +1,81 @@
+<div class="ao-page">
+  <div class="page-header">
+    <div><h1>Orders</h1><p>Manage and update all customer orders</p></div>
+  </div>
+
+  <!-- Status summary -->
+  <div class="status-summary">
+    <div class="stat-chip" *ngFor="let s of statuses"
+      [class.active]="selectedStatus() === s"
+      (click)="selectedStatus.set(selectedStatus() === s ? '' : s)"
+      [style.border-color]="selectedStatus() === s ? statusColor(s) : '#e2e8f0'"
+      [style.background]="selectedStatus() === s ? statusColor(s) + '12' : 'white'">
+      <span class="chip-dot" [style.background]="statusColor(s)"></span>
+      <span>{{ s | titlecase }}</span>
+      <span class="chip-count" [style.background]="statusColor(s)" [style.color]="'white'">{{ countByStatus(s) }}</span>
+    </div>
+    <div class="revenue-chip">
+      <mat-icon>payments</mat-icon> Total Revenue: <strong>${{ totalRevenue.toFixed(2) }}</strong>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <mat-icon>search</mat-icon>
+      <input type="text" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Search orders or customers..." />
+    </div>
+    <span class="result-count">{{ filtered().length }} orders</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Update Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of filtered()">
+            <td class="order-id">{{ o.orderNumber }}</td>
+            <td>
+              <div class="customer-cell">
+                <div class="cust-avatar">{{ o.avatar }}</div>
+                <div>
+                  <div class="cust-name">{{ o.customer }}</div>
+                  <div class="cust-email">{{ o.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ o.items }}</td>
+            <td class="fw">${{ o.total.toFixed(2) }}</td>
+            <td class="muted">{{ o.date }}</td>
+            <td>
+              <span class="status-badge"
+                [style.background]="statusColor(o.status) + '18'"
+                [style.color]="statusColor(o.status)">
+                {{ o.status | titlecase }}
+              </span>
+            </td>
+            <td>
+              <select class="status-select" [value]="o.status" (change)="updateStatus(o.id, $any($event.target).value)">
+                <option *ngFor="let s of statuses" [value]="s">{{ s | titlecase }}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="empty" *ngIf="filtered().length === 0">
+      <mat-icon>receipt_long</mat-icon><p>No orders found</p>
+    </div>
+  </div>
+</div>

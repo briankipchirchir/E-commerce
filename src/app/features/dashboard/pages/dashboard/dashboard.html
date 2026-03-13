@@ -1,0 +1,78 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back, Alex. Here's what's happening today.</p>
+    </div>
+    <button class="btn-primary" routerLink="/products">
+      <mat-icon>add</mat-icon> New Product
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let s of stats">
+      <div class="stat-icon" [style.background]="s.color + '18'">
+        <mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon>
+      </div>
+      <div class="stat-body">
+        <span class="stat-label">{{ s.label }}</span>
+        <span class="stat-value">{{ s.value }}</span>
+        <span class="stat-change" [class.up]="s.up" [class.down]="!s.up">
+          <mat-icon>{{ s.up ? 'trending_up' : 'trending_down' }}</mat-icon>
+          {{ s.change }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-row">
+
+    <div class="card orders-card">
+      <div class="card-head">
+        <h3>Recent Orders</h3>
+        <a routerLink="/orders" class="link-more">View all</a>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of recentOrders">
+            <td class="order-id">{{ o.id }}</td>
+            <td>{{ o.customer }}</td>
+            <td class="bold">{{ o.amount }}</td>
+            <td><span class="badge" [ngClass]="o.css">{{ o.status }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card products-card">
+      <div class="card-head">
+        <h3>Top Products</h3>
+        <a routerLink="/products" class="link-more">View all</a>
+      </div>
+      <div class="product-list">
+        <div class="product-row" *ngFor="let p of topProducts; let i = index">
+          <span class="rank">{{ i + 1 }}</span>
+          <div class="pinfo">
+            <span class="pname">{{ p.name }}</span>
+            <span class="psales">{{ p.sales }} sold</span>
+          </div>
+          <span class="prevenue">{{ p.revenue }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

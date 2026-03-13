@@ -1,0 +1,154 @@
+<div class="cart-page">
+
+  <!-- Header -->
+  <div class="cart-header">
+    <div class="cart-header-inner">
+      <div>
+        <h1>My Cart
+          <span class="item-count" *ngIf="cartService.totalCount() > 0">
+            {{ cartService.totalCount() }} item{{ cartService.totalCount() !== 1 ? 's' : '' }}
+          </span>
+        </h1>
+        <p>Review your items before checkout</p>
+      </div>
+      <a routerLink="/products" class="continue-link">
+        <mat-icon>arrow_back</mat-icon> Continue Shopping
+      </a>
+    </div>
+  </div>
+
+  <div class="cart-body">
+
+    <!-- ── EMPTY STATE ── -->
+    <div class="empty-cart" *ngIf="cartService.cartItems().length === 0">
+      <div class="empty-icon">
+        <mat-icon>shopping_bag</mat-icon>
+      </div>
+      <h2>Your cart is empty</h2>
+      <p>Looks like you haven't added anything yet.<br/>Start exploring our products!</p>
+      <a routerLink="/products" class="shop-btn">
+        <mat-icon>storefront</mat-icon>
+        Browse Products
+      </a>
+    </div>
+
+    <!-- ── CART CONTENT ── -->
+    <div class="cart-content" *ngIf="cartService.cartItems().length > 0">
+
+      <!-- Left: items -->
+      <div class="cart-items">
+
+        <!-- Free shipping progress -->
+        <div class="shipping-progress" *ngIf="amountToFreeShipping > 0">
+          <div class="shipping-progress-text">
+            <mat-icon>local_shipping</mat-icon>
+            Add <strong>${{ amountToFreeShipping.toFixed(2) }}</strong> more for free shipping!
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="shippingProgress"></div>
+          </div>
+        </div>
+
+        <div class="free-shipping-banner" *ngIf="amountToFreeShipping === 0">
+          <mat-icon>check_circle</mat-icon>
+          You've unlocked <strong>free shipping!</strong> 🎉
+        </div>
+
+        <!-- Item list -->
+        <div class="cart-item" *ngFor="let item of cartService.cartItems()">
+
+          <!-- Icon / image -->
+          <div class="item-image">
+            <mat-icon class="item-icon">{{ iconMap[item.image] || 'inventory_2' }}</mat-icon>
+          </div>
+
+          <!-- Details -->
+          <div class="item-details">
+            <span class="item-category">{{ item.category }}</span>
+            <h3 class="item-name">{{ item.name }}</h3>
+            <span class="item-price-mobile">${{ (item.price * item.quantity).toFixed(2) }}</span>
+          </div>
+
+          <!-- Qty controls -->
+          <div class="qty-control">
+            <button class="qty-btn" (click)="cartService.updateQuantity(item.id, item.quantity - 1)">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="qty-value">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="cartService.updateQuantity(item.id, item.quantity + 1)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <!-- Unit price -->
+          <div class="item-price">
+            <span class="price-total">${{ (item.price * item.quantity).toFixed(2) }}</span>
+            <span class="price-unit" *ngIf="item.quantity > 1">${{ item.price.toFixed(2) }} each</span>
+          </div>
+
+          <!-- Remove -->
+          <button class="remove-btn" (click)="cartService.removeItem(item.id)" title="Remove">
+            <mat-icon>close</mat-icon>
+          </button>
+
+        </div>
+
+        <!-- Cart actions -->
+        <div class="cart-actions">
+          <button class="clear-btn" (click)="cartService.clearCart()">
+            <mat-icon>delete_outline</mat-icon> Clear Cart
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Right: order summary -->
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span>Subtotal ({{ cartService.totalCount() }} items)</span>
+            <span>${{ cartService.subtotal().toFixed(2) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span class="free-tag" *ngIf="shipping === 0">FREE</span>
+            <span *ngIf="shipping > 0">${{ shipping.toFixed(2) }}</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax (8%)</span>
+            <span>${{ tax.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-total">
+          <span>Total</span>
+          <span>${{ total.toFixed(2) }}</span>
+        </div>
+
+        <!-- Promo code -->
+        <div class="promo-row">
+          <input type="text" placeholder="Promo code" class="promo-input" />
+          <button class="promo-btn">Apply</button>
+        </div>
+
+       <a routerLink="/checkout" class="checkout-btn">
+  
+  Proceed to Checkout
+</a>
+
+        <div class="trust-badges">
+          <div class="badge"><mat-icon>verified_user</mat-icon> Secure checkout</div>
+          <div class="badge"><mat-icon>replay</mat-icon> Free returns</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

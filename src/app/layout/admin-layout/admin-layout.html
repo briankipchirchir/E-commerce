@@ -1,0 +1,70 @@
+<div class="admin-shell" [class.collapsed]="sidebarCollapsed()">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-icon"><mat-icon>bolt</mat-icon></div>
+        <div class="brand-text" *ngIf="!sidebarCollapsed()">
+          <span class="brand-name">SmartCommerce</span>
+          <span class="brand-sub">Admin Panel</span>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav class="sidebar-nav">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.route"
+          class="nav-link"
+          [class.active]="isActive(item.route)"
+          [title]="sidebarCollapsed() ? item.label : ''">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span class="nav-label" *ngIf="!sidebarCollapsed()">{{ item.label }}</span>
+          <span class="nav-badge" *ngIf="item.badge && !sidebarCollapsed()">{{ item.badge }}</span>
+          <span class="nav-badge-dot" *ngIf="item.badge && sidebarCollapsed()"></span>
+        </a>
+      </nav>
+
+      <!-- Bottom -->
+      <div class="sidebar-bottom">
+        <button class="sidebar-bottom-btn" (click)="goToStore()" [title]="sidebarCollapsed() ? 'View Store' : ''">
+          <mat-icon>storefront</mat-icon>
+          <span *ngIf="!sidebarCollapsed()">View Store</span>
+        </button>
+        <button class="sidebar-bottom-btn logout" (click)="logout()" [title]="sidebarCollapsed() ? 'Logout' : ''">
+          <mat-icon>logout</mat-icon>
+          <span *ngIf="!sidebarCollapsed()">Logout</span>
+        </button>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="admin-main">
+
+    <!-- Top bar -->
+    <header class="admin-topbar">
+      <button class="collapse-btn" (click)="toggleSidebar()">
+        <mat-icon>{{ sidebarCollapsed() ? 'menu' : 'menu_open' }}</mat-icon>
+      </button>
+
+      <div class="topbar-right">
+        <button class="topbar-btn" title="Notifications">
+          <mat-icon>notifications</mat-icon>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="admin-avatar" [title]="adminName">{{ adminInitials }}</div>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main class="admin-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>

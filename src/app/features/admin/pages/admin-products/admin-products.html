@@ -1,0 +1,138 @@
+<div class="ap-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <h1>Products</h1>
+      <p>Manage your product catalogue</p>
+    </div>
+    <a routerLink="/admin/products/new" class="add-btn">
+      <mat-icon>add</mat-icon> Add Product
+    </a>
+  </div>
+
+  <!-- Summary chips -->
+  <div class="summary-chips">
+    <div class="chip"><span class="chip-dot active"></span> {{ activeCount }} Active</div>
+    <div class="chip"><span class="chip-dot inactive"></span> {{ inactiveCount }} Inactive</div>
+    <div class="chip warn"><mat-icon>warning_amber</mat-icon> {{ lowStockCount }} Low Stock</div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <mat-icon>search</mat-icon>
+      <input type="text" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Search products..." />
+    </div>
+    <select [value]="selectedCategory()" (change)="selectedCategory.set($any($event.target).value)">
+      <option value="">All Categories</option>
+      <option *ngFor="let c of categoriesList()" [value]="c.name">{{ c.name }}</option>
+    </select>
+    <select [value]="selectedStatus()" (change)="selectedStatus.set($any($event.target).value)">
+      <option value="">All Status</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+      <option value="low">Low Stock</option>
+    </select>
+    <select [value]="sortBy()" (change)="sortBy.set($any($event.target).value)">
+      <option value="newest">Newest</option>
+      <option value="price-asc">Price ↑</option>
+      <option value="price-desc">Price ↓</option>
+      <option value="stock">Stock</option>
+      <option value="rating">Rating</option>
+    </select>
+    <span class="result-count">{{ filtered().length }} products</span>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filtered()" [class.inactive-row]="!p.active">
+            <td>
+              <div class="prod-cell">
+                <div class="prod-icon"><mat-icon>{{ p.images?.[0] ? "image" : "inventory_2" }}</mat-icon></div>
+                <div>
+                  <div class="prod-name">{{ p.name }}</div>
+                  <div class="prod-meta">
+                    <span class="prod-badge" *ngIf="p.featured" style="background:#00529b22" >Featured</span>
+                    <span class="prod-id">ID: {{ p.id }}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td><span class="cat-tag">{{ p.category?.name }}</span></td>
+            <td>
+              <div class="price-cell">
+                <span class="price">${{ p.price.toFixed(2) }}</span>
+                <span class="orig" *ngIf="p.originalPrice">${{ p.originalPrice.toFixed(2) }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="stock-val" [class.low]="p.stockQuantity <= 10" [class.ok]="p.stockQuantity > 10">
+                <mat-icon *ngIf="p.stockQuantity <= 10">warning_amber</mat-icon>
+                {{ p.stockQuantity }}
+              </span>
+            </td>
+            <td>
+              <div class="rating-cell">
+                <mat-icon class="star">star</mat-icon>
+                <span>{{ p.rating }}</span>
+                <span class="rev-count">({{ p.reviewCount }})</span>
+              </div>
+            </td>
+            <td>
+              <label class="toggle">
+                <input type="checkbox" [checked]="p.active" (change)="toggleStatus(p)" />
+                <span class="slider"></span>
+              </label>
+            </td>
+            <td>
+              <div class="actions">
+                <a [routerLink]="['/admin/products', p.id, 'edit']" class="act-btn edit" title="Edit">
+                  <mat-icon>edit</mat-icon>
+                </a>
+                <button class="act-btn delete" (click)="confirmDelete(p.id)" title="Delete">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty -->
+    <div class="empty" *ngIf="filtered().length === 0">
+      <mat-icon>inventory_2</mat-icon>
+      <p>No products match your filters</p>
+      <button (click)="search.set(''); selectedCategory.set(''); selectedStatus.set('')">Clear filters</button>
+    </div>
+  </div>
+
+  <!-- Delete confirm modal -->
+  <div class="modal-overlay" *ngIf="deleteConfirmId()" (click)="cancelDelete()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-icon"><mat-icon>delete_forever</mat-icon></div>
+      <h3>Delete Product?</h3>
+      <p>This action cannot be undone. The product will be permanently removed.</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" (click)="cancelDelete()">Cancel</button>
+        <button class="modal-delete" (click)="deleteProduct()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+</div>

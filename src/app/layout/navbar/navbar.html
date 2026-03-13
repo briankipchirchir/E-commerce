@@ -1,0 +1,151 @@
+<div class="navbar-wrapper" [class.scrolled]="scrolled()">
+
+  <!-- Promo strip -->
+  <div class="promo-bar">
+    <span>🚀 Free shipping on orders over $50</span>
+    <span class="divider">|</span>
+    <span>⚡ Up to 50% off Electronics this week</span>
+    <span class="divider">|</span>
+    <span>🔄 30-day hassle-free returns</span>
+  </div>
+
+  <!-- Main navbar -->
+  <header class="navbar">
+
+    <!-- Brand -->
+    <a routerLink="/products" class="brand">
+      <!-- <div class="brand-icon">
+        <mat-icon>bolt</mat-icon>
+      </div> -->
+      <div class="brand-text">
+        <span class="brand-name">ShopSmart</span>
+        <span class="brand-tagline">Premium Store</span>
+      </div>
+    </a>
+
+    <!-- Search -->
+    <div class="search-wrap" [class.focused]="searchFocused()">
+      <div class="search-category-picker" [matMenuTriggerFor]="catMenu">
+        <span>All</span>
+        <mat-icon>expand_more</mat-icon>
+      </div>
+      <div class="search-divider"></div>
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+        (focus)="searchFocused.set(true)"
+        (blur)="searchFocused.set(false)"
+        placeholder="Search products, brands and more..."
+        class="search-input"
+      />
+      <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <button class="search-btn">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+
+    <mat-menu #catMenu="matMenu">
+      <button mat-menu-item *ngFor="let cat of categories"
+        [routerLink]="['/products']" [queryParams]="{category: cat.param}">
+        <mat-icon>{{ cat.icon }}</mat-icon> {{ cat.label }}
+      </button>
+    </mat-menu>
+
+    <!-- Right actions -->
+    <div class="nav-actions">
+
+      <!-- Wishlist -->
+      <button class="action-pill" matTooltip="Wishlist">
+        <mat-icon>favorite_border</mat-icon>
+        <span class="pill-label">Wishlist</span>
+      </button>
+
+      <!-- Orders (only if logged in) -->
+      <a routerLink="/orders" class="action-pill" *ngIf="isLoggedIn" matTooltip="My Orders">
+        <mat-icon>receipt_long</mat-icon>
+        <span class="pill-label">Orders</span>
+      </a>
+
+      <!-- Cart -->
+      <a routerLink="/cart" class="cart-btn">
+        <div class="cart-icon-wrap">
+          <mat-icon>shopping_bag</mat-icon>
+          <span class="cart-badge" *ngIf="cartCount() > 0">{{ cartCount() }}</span>
+        </div>
+        <div class="cart-text">
+          <span class="cart-label">My Cart</span>
+          <span class="cart-count">{{ cartCount() }} item{{ cartCount() !== 1 ? 's' : '' }}</span>
+        </div>
+      </a>
+
+      <!-- LOGGED IN: user pill -->
+      <button class="user-btn" *ngIf="isLoggedIn; else guestButtons" [matMenuTriggerFor]="userMenu">
+        <div class="user-avatar">{{ initials }}</div>
+        <div class="user-text">
+          <span class="user-greeting">Hello,</span>
+          <span class="user-name">{{ firstName }}</span>
+        </div>
+        <mat-icon class="user-chevron">expand_more</mat-icon>
+      </button>
+
+      <!-- LOGGED OUT: Sign In + Register -->
+      <ng-template #guestButtons>
+        <a routerLink="/auth/login" class="btn-signin">Sign In</a>
+        <a routerLink="/auth/register" class="btn-register">Register</a>
+      </ng-template>
+
+      <!-- User dropdown -->
+      <mat-menu #userMenu="matMenu" xPosition="before">
+        <div class="menu-header">
+          <div class="menu-avatar">{{ initials }}</div>
+          <div>
+            <div class="menu-name">{{ userName() }}</div>
+            <div class="menu-email">{{ userEmail() }}</div>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person_outline</mat-icon> My Profile
+        </button>
+        <button mat-menu-item routerLink="/orders">
+          <mat-icon>receipt_long</mat-icon> My Orders
+        </button>
+        <button mat-menu-item routerLink="/cart">
+          <mat-icon>shopping_bag</mat-icon> My Cart
+        </button>
+        <button mat-menu-item routerLink="/admin">
+          <mat-icon>admin_panel_settings</mat-icon> Admin Panel
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item class="logout-item" (click)="onLogout()">
+          <mat-icon>logout</mat-icon> Sign Out
+        </button>
+      </mat-menu>
+
+    </div>
+
+  </header>
+
+  <!-- Category nav bar -->
+  <!-- <nav class="category-nav">
+    <div class="cat-nav-inner">
+      <a class="cat-link" routerLink="/products"
+        routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <mat-icon>apps</mat-icon> All Products
+      </a>
+      <a class="cat-link" *ngFor="let cat of categories"
+        [routerLink]="['/products']" [queryParams]="{category: cat.param}"
+        routerLinkActive="active">
+        <mat-icon>{{ cat.icon }}</mat-icon> {{ cat.label }}
+      </a>
+      <a class="cat-link deal-link" routerLink="/products" [queryParams]="{filter: 'deals'}">
+        <mat-icon>local_fire_department</mat-icon> Today's Deals
+      </a>
+    </div>
+  </nav> -->
+
+</div>

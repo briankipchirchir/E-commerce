@@ -1,0 +1,166 @@
+<!-- Hero Banner -->
+<div class="hero">
+  <div class="hero-content">
+    <span class="hero-tag">🔥 Up to 50% off this week</span>
+    <h1>Discover Amazing Products</h1>
+    <p>Shop thousands of items with fast delivery and easy returns</p>
+    <div class="hero-search">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearch()"
+        placeholder="What are you looking for?"
+        class="hero-search-input"
+      />
+      <button class="hero-search-btn" (click)="onSearch()">Search</button>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Category pills -->
+  <div class="category-strip">
+    <button class="cat-pill" [class.active]="selectedCategory() === null" (click)="onCategoryChange(null)">
+      <mat-icon>apps</mat-icon> All
+    </button>
+    <button
+      class="cat-pill"
+      *ngFor="let cat of categories()"
+      [class.active]="selectedCategory() === cat.id"
+      (click)="onCategoryChange(cat.id)">
+      {{ cat.name }}
+    </button>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <p class="result-count">
+      <strong>{{ totalElements() }}</strong> products found
+    </p>
+    <div class="sort">
+      <mat-icon>sort</mat-icon>
+      <select [(ngModel)]="sortBy" (ngModelChange)="onSortChange()">
+        <option value="createdAt">Newest</option>
+        <option value="price">Price: Low to High</option>
+        <option value="rating">Top Rated</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading()">
+    <mat-icon class="spin">autorenew</mat-icon>
+    <p>Loading products...</p>
+  </div>
+
+  <!-- Error -->
+  <div class="empty-state" *ngIf="error() && !loading()">
+    <mat-icon>error_outline</mat-icon>
+    <h3>Something went wrong</h3>
+    <p>{{ error() }}</p>
+    <button class="btn-clear" (click)="loadProducts()">Try Again</button>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="product-grid" *ngIf="!loading() && !error()">
+    <div class="product-card" *ngFor="let product of products()">
+
+      <!-- Image area -->
+      <a [routerLink]="['/products', product.id]" class="card-image">
+        <div class="product-icon-bg">
+          <img *ngIf="getFirstImage(product)" [src]="getFirstImage(product)" [alt]="product.name" class="product-img" />
+          <mat-icon *ngIf="!getFirstImage(product)" class="product-icon">inventory_2</mat-icon>
+        </div>
+
+        <!-- Discount -->
+        <span class="discount-tag" *ngIf="product.originalPrice">
+          -{{ discount(product) }}%
+        </span>
+
+        <!-- Featured badge -->
+        <span class="product-badge" *ngIf="product.featured" style="background:#00529b">
+          Featured
+        </span>
+
+        <!-- Quick add overlay -->
+        <div class="quick-add" (click)="$event.preventDefault(); addToCart(product)">
+          <mat-icon>add_shopping_cart</mat-icon>
+          Quick Add
+        </div>
+      </a>
+
+      <!-- Card body -->
+      <div class="card-body">
+        <span class="card-category">{{ product.category?.name }}</span>
+        <a [routerLink]="['/products', product.id]" class="card-name">{{ product.name }}</a>
+        <p class="card-desc">{{ product.description }}</p>
+
+        <!-- Stars -->
+        <div class="rating">
+          <div class="stars">
+            <mat-icon *ngFor="let s of stars(product.rating)" class="star">{{ s }}</mat-icon>
+          </div>
+          <span class="rating-text">{{ product.rating }} ({{ product.reviewCount }})</span>
+        </div>
+
+        <!-- Price + Cart -->
+        <div class="card-footer">
+          <div class="price-group">
+            <span class="price">${{ product.price.toFixed(2) }}</span>
+            <span class="original-price" *ngIf="product.originalPrice">
+              ${{ product.originalPrice.toFixed(2) }}
+            </span>
+          </div>
+
+          <button
+            class="add-btn"
+            (click)="addToCart(product)"
+            [class.added]="getCartCount(product.id) > 0">
+            <mat-icon>{{ getCartCount(product.id) > 0 ? 'check' : 'add' }}</mat-icon>
+            <span *ngIf="getCartCount(product.id) === 0">Add to Cart</span>
+            <span *ngIf="getCartCount(product.id) > 0">Added ({{ getCartCount(product.id) }})</span>
+          </button>
+        </div>
+
+        <!-- Stock warning -->
+        <p class="low-stock" *ngIf="product.stockQuantity <= 10 && product.stockQuantity > 0">
+          <mat-icon>warning_amber</mat-icon>
+          Only {{ product.stockQuantity }} left in stock!
+        </p>
+        <p class="low-stock" *ngIf="!product.inStock">
+          <mat-icon>cancel</mat-icon> Out of Stock
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading() && !error() && products().length === 0">
+    <mat-icon>search_off</mat-icon>
+    <h3>No products found</h3>
+    <p>Try a different search term or category</p>
+    <button class="btn-clear" (click)="search = ''; onCategoryChange(null)">
+      Clear filters
+    </button>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button class="page-btn" [disabled]="page() === 0" (click)="goToPage(page() - 1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button
+      class="page-btn"
+      *ngFor="let p of pages"
+      [class.active]="p === page()"
+      (click)="goToPage(p)">
+      {{ p + 1 }}
+    </button>
+    <button class="page-btn" [disabled]="page() === totalPages() - 1" (click)="goToPage(page() + 1)">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+</div>

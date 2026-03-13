@@ -1,0 +1,24 @@
+.footer {
+  background: #00529b;
+  color: rgba(255,255,255,0.6);
+  margin-top: 64px;
+}
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 48px 32px;
+  display: flex;
+  gap: 64px;
+}
+.footer-brand { flex: 1; }
+.footer-logo { font-size: 20px; font-weight: 800; color: white; display: block; margin-bottom: 8px; }
+.footer-brand p { font-size: 13px; line-height: 1.6; margin: 0; }
+.footer-links { display: flex; gap: 48px; }
+.link-group { display: flex; flex-direction: column; gap: 10px; }
+.link-group h4 { font-size: 13px; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 4px; }
+.link-group a { font-size: 13px; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+.link-group a:hover { color: white; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.08); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; }
+.status { display: flex; align-items: center; gap: 6px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; }
+@media (max-width: 768px) { .footer-inner { flex-direction: column; gap: 32px; } .footer-links { flex-wrap: wrap; gap: 24px; } }

@@ -1,0 +1,155 @@
+<div class="dash-page">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back! Here's what's happening today.</p>
+    </div>
+    <div class="period-tabs">
+      <button [class.active]="selectedPeriod() === '7d'"  (click)="selectedPeriod.set('7d')">7 days</button>
+      <button [class.active]="selectedPeriod() === '30d'" (click)="selectedPeriod.set('30d')">30 days</button>
+      <button [class.active]="selectedPeriod() === '90d'" (click)="selectedPeriod.set('90d')">90 days</button>
+    </div>
+  </div>
+
+  <!-- ── STAT CARDS ── -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let s of stats">
+      <div class="stat-icon" [style.background]="s.bg">
+        <mat-icon [style.color]="s.color">{{ s.icon }}</mat-icon>
+      </div>
+      <div class="stat-body">
+        <span class="stat-label">{{ s.label }}</span>
+        <span class="stat-value">{{ s.value }}</span>
+        <span class="stat-sub" [class.up]="s.trend === 'up'" [class.down]="s.trend === 'down'">
+          <mat-icon>{{ s.trend === 'up' ? 'trending_up' : 'trending_down' }}</mat-icon>
+          {{ s.sub }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROW 2: Chart + Order status ── -->
+  <div class="row-two">
+
+    <!-- Revenue chart -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h2>Revenue Overview</h2>
+          <p>Daily revenue for the last 14 days</p>
+        </div>
+        <span class="chart-total">$48,295</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-wrap" *ngFor="let b of chartBars">
+          <div class="bar" [style.height.%]="b.h" [title]="'$' + (b.h * 500)">
+            <div class="bar-fill"></div>
+          </div>
+          <span class="bar-label">{{ b.day }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order status donut-style -->
+    <div class="status-card">
+      <h2>Orders by Status</h2>
+      <p>Total: 1,284 orders</p>
+
+      <div class="status-list">
+        <div class="status-item" *ngFor="let s of ordersByStatus">
+          <div class="status-dot" [style.background]="s.color"></div>
+          <span class="status-label">{{ s.label }}</span>
+          <div class="status-bar-track">
+            <div class="status-bar-fill" [style.width.%]="s.pct" [style.background]="s.color"></div>
+          </div>
+          <span class="status-count">{{ s.count }}</span>
+          <span class="status-pct">{{ s.pct }}%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── ROW 3: Recent orders + Top products ── -->
+  <div class="row-three">
+
+    <!-- Recent orders table -->
+    <div class="table-card">
+      <div class="card-head">
+        <div>
+          <h2>Recent Orders</h2>
+          <p>Latest 6 orders across the platform</p>
+        </div>
+        <a routerLink="/admin/orders" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Customer</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of recentOrders">
+              <td class="order-id">{{ o.id }}</td>
+              <td>
+                <div class="customer-cell">
+                  <div class="cust-avatar">{{ o.avatar }}</div>
+                  {{ o.customer }}
+                </div>
+              </td>
+              <td>{{ o.items }} item{{ o.items !== 1 ? 's' : '' }}</td>
+              <td class="fw">{{ o.total }}</td>
+              <td>
+                <span class="status-badge"
+                  [style.background]="statusBg(o.status)"
+                  [style.color]="statusColor(o.status)">
+                  {{ o.status | titlecase }}
+                </span>
+              </td>
+              <td class="muted">{{ o.date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Top products -->
+    <div class="top-products-card">
+      <div class="card-head">
+        <div>
+          <h2>Top Products</h2>
+          <p>By total revenue</p>
+        </div>
+        <a routerLink="/admin/products" class="view-all">View all <mat-icon>arrow_forward</mat-icon></a>
+      </div>
+
+      <div class="product-list">
+        <div class="top-product" *ngFor="let p of topProducts; let i = index">
+          <span class="rank">#{{ i + 1 }}</span>
+          <div class="prod-icon-sm"><mat-icon>{{ p.icon }}</mat-icon></div>
+          <div class="prod-info">
+            <span class="prod-name">{{ p.name }}</span>
+            <div class="prod-bar-track">
+              <div class="prod-bar-fill" [style.width.%]="p.pct"></div>
+            </div>
+          </div>
+          <div class="prod-stats">
+            <span class="prod-sales">{{ p.sales }} sold</span>
+            <span class="prod-rev">{{ p.revenue }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

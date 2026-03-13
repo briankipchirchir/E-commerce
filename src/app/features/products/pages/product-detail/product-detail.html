@@ -1,0 +1,176 @@
+<div class="pd-page" *ngIf="product() as p; else loading">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/products">Products</a>
+    <mat-icon>chevron_right</mat-icon>
+    <span>{{ p.category?.name }}</span>
+    <mat-icon>chevron_right</mat-icon>
+    <span class="current">{{ p.name }}</span>
+  </div>
+
+  <!-- Main section -->
+  <div class="pd-main">
+
+    <!-- Left: image gallery -->
+    <div class="pd-gallery">
+      <div class="main-image">
+        <div class="image-bg">
+          <mat-icon class="big-icon">{{ p.images?.[0] ? "image" : "inventory_2" }}</mat-icon>
+        </div>
+        <span class="badge" *ngIf="p.featured" style="background:#00529b">Featured</span>
+        <span class="discount-tag" *ngIf="p.originalPrice">-{{ discount }}%</span>
+      </div>
+      <!-- Thumbnail strip (same icon for now, images from API later) -->
+      <div class="thumbnails">
+        <div class="thumb active"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
+        <div class="thumb"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
+        <div class="thumb"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
+      </div>
+    </div>
+
+    <!-- Right: info -->
+    <div class="pd-info">
+      <span class="pd-category">{{ p.category?.name }}</span>
+      <h1 class="pd-title">{{ p.name }}</h1>
+
+      <!-- Rating -->
+      <div class="pd-rating">
+        <div class="stars">
+          <mat-icon *ngFor="let s of stars(p.rating)" class="star">{{ s }}</mat-icon>
+        </div>
+        <span class="rating-num">{{ p.rating }}</span>
+        <span class="review-count">({{ p.reviewCount.toLocaleString() }} reviews)</span>
+      </div>
+
+      <!-- Price -->
+      <div class="pd-price">
+        <span class="price">${{ p.price.toFixed(2) }}</span>
+        <span class="original" *ngIf="p.originalPrice">${{ p.originalPrice.toFixed(2) }}</span>
+        <span class="saved" *ngIf="p.originalPrice">
+          Save ${{ (p.originalPrice - p.price).toFixed(2) }}
+        </span>
+      </div>
+
+      <p class="pd-short-desc">{{ p.description }}</p>
+
+      <!-- Stock -->
+      <div class="stock-row">
+        <div class="in-stock" *ngIf="p.stockQuantity > 10">
+          <mat-icon>check_circle</mat-icon> In Stock ({{ p.stockQuantity }} available)
+        </div>
+        <div class="low-stock" *ngIf="p.stockQuantity <= 10 && p.stockQuantity > 0">
+          <mat-icon>warning_amber</mat-icon> Only {{ p.stockQuantity }} left — order soon!
+        </div>
+        <div class="out-stock" *ngIf="p.stockQuantity === 0">
+          <mat-icon>cancel</mat-icon> Out of Stock
+        </div>
+      </div>
+
+      <!-- Quantity + Add to Cart -->
+      <div class="add-section">
+        <div class="qty-picker">
+          <button class="qty-btn" (click)="changeQty(-1)" [disabled]="quantity() <= 1">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <span class="qty-val">{{ quantity() }}</span>
+          <button class="qty-btn" (click)="changeQty(1)" [disabled]="quantity() >= p.stockQuantity">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+        <button class="add-btn" (click)="addToCart()" [class.added]="addedToCart()" [disabled]="p.stockQuantity === 0">
+          <mat-icon>{{ addedToCart() ? 'check' : 'shopping_cart' }}</mat-icon>
+          {{ addedToCart() ? 'Added to Cart!' : 'Add to Cart' }}
+        </button>
+
+        <button class="wishlist-btn" title="Add to wishlist">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
+      </div>
+
+      <!-- Trust row -->
+      <div class="trust-row">
+        <div class="trust-item">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Free delivery over $50</span>
+        </div>
+        <div class="trust-item">
+          <mat-icon>replay</mat-icon>
+          <span>30-day returns</span>
+        </div>
+        <div class="trust-item">
+          <mat-icon>verified_user</mat-icon>
+          <span>2-year warranty</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="pd-tabs">
+    <div class="tab-nav">
+      <button class="tab-btn" [class.active]="selectedTab() === 'description'" (click)="selectedTab.set('description')">
+        Description
+      </button>
+      <button class="tab-btn" [class.active]="selectedTab() === 'specs'" (click)="selectedTab.set('specs')">
+        Specifications
+      </button>
+      <button class="tab-btn" [class.active]="selectedTab() === 'reviews'" (click)="selectedTab.set('reviews')">
+        Reviews ({{ p.reviewCount.toLocaleString() }})
+      </button>
+    </div>
+
+    <!-- Description tab -->
+    <div class="tab-content" *ngIf="selectedTab() === 'description'">
+      <p class="long-desc">{{ p.description }}</p>
+    </div>
+
+    <!-- Specs tab -->
+    <div class="tab-content" *ngIf="selectedTab() === 'specs'">
+      <table class="specs-table">
+        <tr *ngFor="let spec of specsList; let i = index" [class.alt]="i % 2 === 0">
+          <td class="spec-label">{{ spec.label }}</td>
+          <td class="spec-value">{{ spec.value }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Reviews tab -->
+    <div class="tab-content" *ngIf="selectedTab() === 'reviews'">
+      <div class="reviews-summary">
+        <div class="big-rating">
+          <span class="big-num">{{ p.rating }}</span>
+          <div class="stars">
+            <mat-icon *ngFor="let s of stars(p.rating)" class="star">{{ s }}</mat-icon>
+          </div>
+          <span class="total-reviews">{{ p.reviewCount.toLocaleString() }} reviews</span>
+        </div>
+      </div>
+      <div class="review-list">
+        <div class="review-card" *ngFor="let r of mockReviews">
+          <div class="review-header">
+            <div class="reviewer-avatar">{{ r.name[0] }}</div>
+            <div>
+              <div class="reviewer-name">{{ r.name }}</div>
+              <div class="review-date">{{ r.date }}</div>
+            </div>
+            <div class="review-stars">
+              <mat-icon *ngFor="let s of stars(r.rating)" class="star small">star</mat-icon>
+            </div>
+          </div>
+          <p class="review-text">{{ r.comment }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Loading -->
+<ng-template #loading>
+  <div class="loading-state">
+    <mat-icon>inventory_2</mat-icon>
+    <p>Loading product...</p>
+  </div>
+</ng-template>

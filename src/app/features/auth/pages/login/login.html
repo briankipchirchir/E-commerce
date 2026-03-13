@@ -1,0 +1,59 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    <div class="auth-logo">
+      <div class="logo-icon">
+      
+      </div>
+      <span class="logo-text">SmartCommerce</span>
+    </div>
+
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-subtitle">Sign in to your account to continue</p>
+
+    <div class="error-msg" *ngIf="error">
+      <mat-icon>error_outline</mat-icon>
+      {{ error }}
+    </div>
+
+    <div class="field">
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        [(ngModel)]="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+      />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="input-group">
+        <input
+          id="password"
+          [type]="showPassword() ? 'text' : 'password'"
+          [(ngModel)]="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+        <button type="button" class="toggle-pwd" (click)="togglePassword()">
+          <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <button
+      class="btn-submit"
+      (click)="onSubmit()"
+      [disabled]="loading">
+      {{ loading ? 'Signing in...' : 'Sign In' }}
+    </button>
+
+    <p class="auth-switch">
+      Don't have an account?
+      <a routerLink="/auth/register">Create one</a>
+    </p>
+
+  </div>
+</div>
