@@ -15,6 +15,7 @@ import { ProductService, Product, Category } from '../../../../core/services/Pro
 })
 export class ProductList implements OnInit {
   readonly Math = Math;
+  readonly String = String;
   private cartService = inject(CartService);
   private productService = inject(ProductService);
 
@@ -30,6 +31,15 @@ export class ProductList implements OnInit {
   totalPages = signal(0);
   totalElements = signal(0);
   readonly size = 12;
+
+  // ✅ computed signal — reacts instantly when cart changes
+  cartCountMap = computed(() => {
+    const map = new Map<string, number>();
+    for (const item of this.cartService.cartItems()) {
+      map.set(item.id, item.quantity);
+    }
+    return map;
+  });
 
   ngOnInit(): void {
     this.loadCategories();
@@ -71,26 +81,10 @@ export class ProductList implements OnInit {
     });
   }
 
-  onSearch(): void {
-    this.page.set(0);
-    this.loadProducts();
-  }
-
-  onCategoryChange(categoryId: number | null): void {
-    this.selectedCategory.set(categoryId);
-    this.page.set(0);
-    this.loadProducts();
-  }
-
-  onSortChange(): void {
-    this.page.set(0);
-    this.loadProducts();
-  }
-
-  goToPage(p: number): void {
-    this.page.set(p);
-    this.loadProducts();
-  }
+  onSearch(): void { this.page.set(0); this.loadProducts(); }
+  onCategoryChange(categoryId: number | null): void { this.selectedCategory.set(categoryId); this.page.set(0); this.loadProducts(); }
+  onSortChange(): void { this.page.set(0); this.loadProducts(); }
+  goToPage(p: number): void { this.page.set(p); this.loadProducts(); }
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages() }, (_, i) => i);
@@ -106,13 +100,14 @@ export class ProductList implements OnInit {
     });
   }
 
+  // ✅ reads from computed map — instant reactive update
   getCartCount(productId: number): number {
-    return this.cartService.getItemCount(String(productId));
+    return this.cartCountMap().get(String(productId)) || 0;
   }
 
-  getFirstImage(product: Product): string {
-    return product.images?.[0] || '';
-  }
+  getCount(productId: number): number { return this.cartCountMap().get(String(productId)) || 0; }
+
+  getFirstImage(product: Product): string { return product.images?.[0] || ''; }
 
   stars(rating: number): string[] {
     return Array.from({ length: 5 }, (_, i) => {

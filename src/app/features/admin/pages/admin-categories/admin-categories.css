@@ -64,3 +64,19 @@ textarea { resize: vertical; min-height: 80px; }
 .modal.small p { font-size: 13.5px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
 .delete-btn { padding: 10px 20px; border: none; border-radius: 10px; background: #ef4444; color: white; font-size: 14px; font-weight: 700; cursor: pointer; }
 @media (max-width: 640px) { .cat-grid { grid-template-columns: 1fr; } }
+/* Loading */
+.loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 60px; color: #94a3b8; font-size: 14px; }
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 60px 20px; color: #94a3b8; }
+.empty-state mat-icon { font-size: 48px; opacity: 0.3; display: block; margin-bottom: 12px; }
+.empty-state h3 { font-size: 16px; font-weight: 700; color: #64748b; margin: 0 0 6px; }
+.empty-state p { font-size: 13.5px; margin: 0; }
+
+/* Optional label */
+.optional { font-size: 11px; font-weight: 500; color: #94a3b8; margin-left: 4px; }
+
+/* Image preview in card */
+.cat-image { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; }

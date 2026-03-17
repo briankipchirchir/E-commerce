@@ -140,6 +140,10 @@ export class AdminProductForm implements OnInit {
     });
   }
 
+  getCategoryImage(): string {
+    return this.categories().find(c => c.id === this.form.categoryId)?.imageUrl || '';
+  }
+
   getCategoryName(): string {
     return this.categories().find(c => c.id === this.form.categoryId)?.name || "Category";
   }

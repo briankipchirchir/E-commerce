@@ -1,5 +1,4 @@
 <div class="ol-page">
-
   <!-- Header -->
   <div class="ol-header">
     <div class="ol-header-inner">
@@ -18,11 +17,10 @@
     <!-- Status filter tabs -->
     <div class="status-tabs">
       <button class="status-tab" [class.active]="selectedStatus() === ''" (click)="selectedStatus.set('')">
-        All Orders <span class="tab-count">{{ orders().length }}</span>
+        All Orders <span class="tab-count">{{ totalElements() }}</span>
       </button>
-      <button
-        class="status-tab"
-        *ngFor="let s of statuses"
+      <button class="status-tab"
+        *ngFor="let s of ['PENDING','PROCESSING','SHIPPED','DELIVERED','CANCELLED']"
         [class.active]="selectedStatus() === s"
         (click)="selectedStatus.set(s)"
         [style.border-bottom-color]="selectedStatus() === s ? statusColor(s) : 'transparent'"
@@ -32,17 +30,27 @@
       </button>
     </div>
 
+    <!-- Loading -->
+    <div class="loading-state" *ngIf="loading()">
+      <mat-icon class="spin">autorenew</mat-icon>
+      <p>Loading orders...</p>
+    </div>
+
     <!-- Orders list -->
-    <div class="orders-list" *ngIf="filtered().length > 0">
+    <div class="orders-list" *ngIf="!loading() && filtered().length > 0">
       <div class="order-card" *ngFor="let o of filtered()">
 
         <!-- Card header -->
         <div class="order-card-header">
           <div class="order-meta">
             <span class="order-num">{{ o.orderNumber }}</span>
-            <span class="order-date"><mat-icon>calendar_today</mat-icon> {{ o.date }}</span>
+            <span class="order-date">
+              <mat-icon>calendar_today</mat-icon> {{ formatDate(o.createdAt) }}
+            </span>
           </div>
-          <div class="order-status" [style.background]="statusColor(o.status) + '18'" [style.color]="statusColor(o.status)">
+          <div class="order-status"
+            [style.background]="statusColor(o.status) + '18'"
+            [style.color]="statusColor(o.status)">
             <mat-icon>{{ statusIcon(o.status) }}</mat-icon>
             {{ o.status | titlecase }}
           </div>
@@ -50,13 +58,19 @@
 
         <!-- Items preview -->
         <div class="order-items-preview">
-          <div class="item-thumb" *ngFor="let item of o.items.slice(0, 3)">
-            <mat-icon>{{ iconMap[item.image] || 'inventory_2' }}</mat-icon>
+          <div class="item-thumb" *ngFor="let item of (o.items || []).slice(0, 3)">
+            <img *ngIf="item.productImage" [src]="item.productImage" [alt]="item.productName" />
+            <mat-icon *ngIf="!item.productImage">inventory_2</mat-icon>
           </div>
-          <div class="more-items" *ngIf="o.itemCount > 3">+{{ o.itemCount - 3 }}</div>
+          <div class="more-items" *ngIf="(o.items?.length ?? 0) > 3">
+            +{{ (o.items?.length || 0) - 3 }}
+          </div>
           <div class="items-label">
-            {{ o.itemCount }} item{{ o.itemCount !== 1 ? 's' : '' }}
-            <span *ngIf="o.items.length > 0"> · {{ o.items[0].name }}<span *ngIf="o.itemCount > 1"> & more</span></span>
+            {{ o.items?.length || 0 }} item{{ (o.items?.length || 0) !== 1 ? 's' : '' }}
+            <span *ngIf="o.items && o.items.length > 0">
+              · {{ o.items[0].productName }}
+              <span *ngIf="o.items && o.items.length > 1"> & more</span>
+            </span>
           </div>
         </div>
 
@@ -64,26 +78,22 @@
         <div class="order-card-footer">
           <div class="order-total">
             <span class="total-label">Order Total</span>
-            <span class="total-val">${{ o.total.toFixed(2) }}</span>
+            <span class="total-val">${{ o.total?.toFixed(2) }}</span>
           </div>
           <div class="order-actions">
             <a [routerLink]="['/orders', o.id]" class="btn-detail">
               View Details <mat-icon>arrow_forward</mat-icon>
             </a>
-            <button class="btn-reorder" *ngIf="o.status === 'DELIVERED'">
-              <mat-icon>replay</mat-icon> Reorder
-            </button>
             <button class="btn-track" *ngIf="o.status === 'SHIPPED'">
               <mat-icon>local_shipping</mat-icon> Track
             </button>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- Empty state -->
-    <div class="empty-state" *ngIf="filtered().length === 0">
+    <div class="empty-state" *ngIf="!loading() && filtered().length === 0">
       <div class="empty-icon"><mat-icon>receipt_long</mat-icon></div>
       <h2>No orders found</h2>
       <p *ngIf="selectedStatus()">No {{ selectedStatus() | lowercase }} orders yet.</p>
@@ -91,6 +101,22 @@
       <a routerLink="/products" class="browse-btn">
         <mat-icon>storefront</mat-icon> Browse Products
       </a>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages() > 1">
+      <button class="page-btn" [disabled]="page() === 0" (click)="goToPage(page() - 1)">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button class="page-btn"
+        *ngFor="let p of pages"
+        [class.active]="p === page()"
+        (click)="goToPage(p)">
+        {{ p + 1 }}
+      </button>
+      <button class="page-btn" [disabled]="page() === totalPages() - 1" (click)="goToPage(page() + 1)">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
     </div>
 
   </div>

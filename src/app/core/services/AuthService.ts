@@ -171,4 +171,9 @@ export class AuthService {
       return null;
     }
   }
+
+  getUsers(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.AUTH_URL}/users`);
+  }
 }
+

@@ -1,21 +1,22 @@
 <div class="ac-page">
   <div class="page-header">
     <div><h1>Customers</h1><p>Manage customer accounts and roles</p></div>
+    <button class="add-btn" (click)="loadCustomers()"><mat-icon>refresh</mat-icon> Refresh</button>
   </div>
 
   <!-- Summary -->
   <div class="summary-row">
-    <div class="sum-card"><mat-icon>people</mat-icon><div><span>{{ totalCustomers }}</span><p>Total Customers</p></div></div>
-    <div class="sum-card"><mat-icon>check_circle</mat-icon><div><span>{{ activeCount }}</span><p>Active</p></div></div>
-    <div class="sum-card"><mat-icon>admin_panel_settings</mat-icon><div><span>{{ adminCount }}</span><p>Admins</p></div></div>
-    <div class="sum-card"><mat-icon>payments</mat-icon><div><span>${{ totalRevenue.toFixed(0) }}</span><p>Total Revenue</p></div></div>
+    <div class="sum-card"><div class="sum-icon"><mat-icon>people</mat-icon></div><div><span>{{ totalCustomers }}</span><p>Total Users</p></div></div>
+    <div class="sum-card"><div class="sum-icon"><mat-icon>check_circle</mat-icon></div><div><span>{{ activeCount }}</span><p>Active</p></div></div>
+    <div class="sum-card"><div class="sum-icon"><mat-icon>admin_panel_settings</mat-icon></div><div><span>{{ adminCount }}</span><p>Admins</p></div></div>
+    <div class="sum-card"><div class="sum-icon"><mat-icon>person</mat-icon></div><div><span>{{ totalCustomers - adminCount }}</span><p>Customers</p></div></div>
   </div>
 
   <!-- Filters -->
   <div class="filters-bar">
     <div class="search-wrap">
       <mat-icon>search</mat-icon>
-      <input type="text" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Search customers..." />
+      <input type="text" [value]="search()" (input)="search.set($any($event.target).value)" placeholder="Search by name or email..." />
     </div>
     <select [value]="selectedRole()" (change)="selectedRole.set($any($event.target).value)">
       <option value="">All Roles</option>
@@ -27,51 +28,51 @@
       <option value="active">Active</option>
       <option value="inactive">Inactive</option>
     </select>
-    <span class="result-count">{{ filtered().length }} customers</span>
+    <span class="result-count">{{ filtered().length }} users</span>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading()">
+    <mat-icon class="spin">autorenew</mat-icon> Loading customers...
   </div>
 
   <!-- Table -->
-  <div class="table-card">
+  <div class="table-card" *ngIf="!loading()">
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th>Customer</th>
             <th>Phone</th>
-            <th>Orders</th>
-            <th>Total Spent</th>
-            <th>Joined</th>
             <th>Role</th>
-            <th>Active</th>
+            <th>Status</th>
+            <th>Joined</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let c of filtered()" [class.inactive-row]="!c.isActive">
+          <tr *ngFor="let c of filtered()" [class.inactive-row]="!c.enabled">
             <td>
               <div class="customer-cell">
-                <div class="cust-avatar">{{ c.avatar }}</div>
+                <div class="cust-avatar" [ngClass]="'avatar-' + (filtered().indexOf(c) % 4)">{{ getInitials(c) }}</div>
                 <div>
-                  <div class="cust-name">{{ c.name }}</div>
+                  <div class="cust-name">{{ getFullName(c) }}</div>
                   <div class="cust-email">{{ c.email }}</div>
                 </div>
               </div>
             </td>
-            <td class="muted">{{ c.phone }}</td>
-            <td><span class="orders-badge">{{ c.orders }}</span></td>
-            <td class="fw">${{ c.totalSpent.toFixed(2) }}</td>
-            <td class="muted">{{ c.joinDate }}</td>
+            <td class="muted">{{ c.phone || '—' }}</td>
             <td>
-              <button class="role-btn" [class.admin]="c.role === 'ADMIN'" (click)="toggleRole(c.id)">
+              <span class="role-btn" [class.admin]="c.role === 'ADMIN'">
                 <mat-icon>{{ c.role === 'ADMIN' ? 'admin_panel_settings' : 'person' }}</mat-icon>
                 {{ c.role | titlecase }}
-              </button>
+              </span>
             </td>
             <td>
-              <label class="toggle">
-                <input type="checkbox" [checked]="c.isActive" (change)="toggleActive(c.id)" />
-                <span class="slider"></span>
-              </label>
+              <span class="cat-status" [class.active]="c.enabled">
+                {{ c.enabled ? 'Active' : 'Inactive' }}
+              </span>
             </td>
+            <td class="muted">{{ getJoinDate(c) }}</td>
           </tr>
         </tbody>
       </table>

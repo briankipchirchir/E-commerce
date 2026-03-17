@@ -119,3 +119,16 @@
 
 @media (max-width: 900px) { .pd-main { grid-template-columns: 1fr; } .pd-page { padding: 16px; } }
 @media (max-width: 480px) { .add-section { flex-wrap: wrap; } .add-btn { width: 100%; } }
+.main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}

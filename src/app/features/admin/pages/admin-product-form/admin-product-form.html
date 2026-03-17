@@ -140,8 +140,11 @@
         <h3><mat-icon>preview</mat-icon> Preview</h3>
         <div class="preview-product">
           <div class="preview-img">
-            <img *ngIf="form.images[0]" [src]="form.images[0]" alt="preview" />
-            <mat-icon *ngIf="!form.images[0]">inventory_2</mat-icon>
+            <img *ngIf="form.images[0]" [src]="form.images[0]" alt="preview" class="preview-product-img" />
+            <div *ngIf="!form.images[0] && getCategoryImage()" class="preview-cat-bg">
+              <img [src]="getCategoryImage()" alt="category" class="preview-product-img preview-cat-img" />
+            </div>
+            <mat-icon *ngIf="!form.images[0] && !getCategoryImage()">inventory_2</mat-icon>
             <span class="preview-badge" *ngIf="form.featured" style="background:#00529b">Featured</span>
           </div>
           <div class="preview-body">

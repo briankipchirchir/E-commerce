@@ -93,3 +93,12 @@ textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
 .upload-note mat-icon { font-size: 14px; }
 
 @media (max-width: 900px) { .pf-body { grid-template-columns: 1fr; } .field-row { grid-template-columns: 1fr; } }
+.preview-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+.preview-cat-bg { position: absolute; inset: 0; overflow: hidden; }
+.preview-cat-img { opacity: 0.6; filter: blur(1px); }

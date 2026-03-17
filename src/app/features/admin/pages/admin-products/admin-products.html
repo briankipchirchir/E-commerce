@@ -63,7 +63,10 @@
           <tr *ngFor="let p of filtered()" [class.inactive-row]="!p.active">
             <td>
               <div class="prod-cell">
-                <div class="prod-icon"><mat-icon>{{ p.images?.[0] ? "image" : "inventory_2" }}</mat-icon></div>
+                <div class="prod-icon">
+                  <img *ngIf="p.images?.[0]" [src]="p.images[0]" [alt]="p.name" class="prod-img" />
+                  <mat-icon *ngIf="!p.images?.[0]">inventory_2</mat-icon>
+                </div>
                 <div>
                   <div class="prod-name">{{ p.name }}</div>
                   <div class="prod-meta">

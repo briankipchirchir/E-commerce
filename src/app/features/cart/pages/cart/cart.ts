@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../../../core/services/CartService';
-
+import { AuthService } from '../../../../core/services/AuthService';
 
 @Component({
   selector: 'app-cart',
@@ -14,6 +14,7 @@ import { CartService } from '../../../../core/services/CartService';
 })
 export class Cart {
   cartService = inject(CartService);
+  authService = inject(AuthService);
 
   readonly SHIPPING_THRESHOLD = 50;
   readonly SHIPPING_COST = 5.99;
@@ -39,10 +40,7 @@ export class Cart {
     return Math.max(0, this.SHIPPING_THRESHOLD - this.cartService.subtotal());
   }
 
-  iconMap: Record<string, string> = {
-    headphones: 'headphones', watch: 'watch', shoes: 'directions_run',
-    bag: 'shopping_bag', hub: 'hub', chair: 'chair', bottle: 'local_bar',
-    keyboard: 'keyboard', shirt: 'checkroom', organizer: 'table_restaurant',
-    charger: 'battery_charging_full', yoga: 'self_improvement'
-  };
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
 }

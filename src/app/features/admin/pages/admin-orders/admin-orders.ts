@@ -1,15 +1,12 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { OrderService, Order } from '../../../../core/services/OrderService';
+import { ToastService } from '../../../../core/services/ToastService';
 
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-
-interface Order {
-  id: string; orderNumber: string; customer: string; avatar: string;
-  email: string; items: number; total: number; status: OrderStatus; date: string;
-}
 
 @Component({
   selector: 'app-admin-orders',
@@ -18,44 +15,107 @@ interface Order {
   templateUrl: './admin-orders.html',
   styleUrl: './admin-orders.css'
 })
-export class AdminOrders {
+export class AdminOrders implements OnInit {
+  private orderService = inject(OrderService);
+  private toastService = inject(ToastService);
+
   search = signal('');
   selectedStatus = signal('');
   selectedOrder = signal<Order | null>(null);
-
-  orders = signal<Order[]>([
-    { id:'1',  orderNumber:'ORD-001', customer:'Alice Wanjiku',  avatar:'AW', email:'alice@email.com',  items:3, total:129.57, status:'DELIVERED',  date:'Mar 9, 2026'  },
-    { id:'2',  orderNumber:'ORD-002', customer:'Brian Otieno',   avatar:'BO', email:'brian@email.com',  items:1, total:215.99, status:'SHIPPED',     date:'Mar 8, 2026'  },
-    { id:'3',  orderNumber:'ORD-003', customer:'Carol Muthoni',  avatar:'CM', email:'carol@email.com',  items:2, total:107.97, status:'PROCESSING',  date:'Mar 10, 2026' },
-    { id:'4',  orderNumber:'ORD-004', customer:'David Kimani',   avatar:'DK', email:'david@email.com',  items:4, total:342.50, status:'PENDING',     date:'Mar 10, 2026' },
-    { id:'5',  orderNumber:'ORD-005', customer:'Esther Achieng', avatar:'EA', email:'esther@email.com', items:1, total:79.99,  status:'DELIVERED',   date:'Mar 7, 2026'  },
-    { id:'6',  orderNumber:'ORD-006', customer:'Felix Odhiambo', avatar:'FO', email:'felix@email.com',  items:2, total:189.98, status:'CANCELLED',   date:'Mar 6, 2026'  },
-    { id:'7',  orderNumber:'ORD-007', customer:'Grace Njeri',    avatar:'GN', email:'grace@email.com',  items:3, total:224.97, status:'SHIPPED',     date:'Mar 5, 2026'  },
-    { id:'8',  orderNumber:'ORD-008', customer:'Hassan Abdi',    avatar:'HA', email:'hassan@email.com', items:1, total:349.99, status:'PROCESSING',  date:'Mar 4, 2026'  },
-  ]);
+  loading = signal(true);
+  orders = signal<Order[]>([]);
+  page = signal(0);
+  totalPages = signal(0);
+  readonly size = 20;
 
   statuses: OrderStatus[] = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+
+  ngOnInit(): void { this.loadOrders(); }
+
+  loadOrders(): void {
+    this.loading.set(true);
+    const status = this.selectedStatus() || undefined;
+    this.orderService.getAllOrders(this.page(), this.size, status).subscribe({
+      next: (res) => {
+        this.loading.set(false);
+        if (res.success) {
+          this.orders.set(res.data.content);
+          this.totalPages.set(res.data.totalPages);
+        }
+      },
+      error: () => {
+        this.loading.set(false);
+        this.toastService.error('Failed to load orders.');
+      }
+    });
+  }
 
   filtered = computed(() => {
     let list = this.orders();
     const q = this.search().toLowerCase();
-    if (q) list = list.filter(o => o.customer.toLowerCase().includes(q) || o.orderNumber.toLowerCase().includes(q) || o.email.toLowerCase().includes(q));
-    if (this.selectedStatus()) list = list.filter(o => o.status === this.selectedStatus());
+    if (q) list = list.filter(o =>
+      o.customerFirstName?.toLowerCase().includes(q) ||
+      o.customerLastName?.toLowerCase().includes(q) ||
+      o.orderNumber?.toLowerCase().includes(q) ||
+      o.customerEmail?.toLowerCase().includes(q)
+    );
     return list;
   });
 
+  onStatusFilterChange(): void {
+    this.page.set(0);
+    this.loadOrders();
+  }
+
+  selectOrder(order: Order): void {
+    this.selectedOrder.set(order);
+  }
+
+  closeDetail(): void { this.selectedOrder.set(null); }
+
+  updateStatus(id: number, status: OrderStatus): void {
+    this.orderService.updateOrderStatus(id, status).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.orders.update(list => list.map(o => o.id === id ? res.data : o));
+          if (this.selectedOrder()?.id === id) this.selectedOrder.set(res.data);
+          this.toastService.success('Order status updated!');
+        }
+      },
+      error: () => this.toastService.error('Failed to update status.')
+    });
+  }
+
+  getInitials(order: Order): string {
+    return ((order.customerFirstName?.[0] || '') +
+            (order.customerLastName?.[0] || '')).toUpperCase() || '?';
+  }
+
+  getCustomerName(order: Order): string {
+    return `${order.customerFirstName || ''} ${order.customerLastName || ''}`.trim() ||
+           order.customerEmail || 'Unknown';
+  }
+
+  formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('en-US',
+      { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
   statusColor(s: string): string {
-    const m: Record<string, string> = { DELIVERED:'#10b981', SHIPPED:'#3b82f6', PROCESSING:'#00529b', PENDING:'#f59e0b', CANCELLED:'#ef4444' };
+    const m: Record<string, string> = {
+      DELIVERED: '#10b981', SHIPPED: '#3b82f6',
+      PROCESSING: '#00529b', PENDING: '#f59e0b', CANCELLED: '#ef4444'
+    };
     return m[s] || '#94a3b8';
   }
 
-  updateStatus(id: string, status: OrderStatus) {
-    this.orders.update(list => list.map(o => o.id === id ? { ...o, status } : o));
-    if (this.selectedOrder()?.id === id) {
-      this.selectedOrder.update(o => o ? { ...o, status } : null);
-    }
+  countByStatus(s: string): number {
+    return this.orders().filter(o => o.status === s).length;
   }
 
-  countByStatus(s: string) { return this.orders().filter(o => o.status === s).length; }
-  get totalRevenue() { return this.orders().filter(o => o.status !== 'CANCELLED').reduce((sum, o) => sum + o.total, 0); }
+  get totalRevenue(): number {
+    return this.orders()
+      .filter(o => o.status !== 'CANCELLED')
+      .reduce((sum, o) => sum + o.total, 0);
+  }
 }

@@ -117,10 +117,10 @@
           <button
             class="add-btn"
             (click)="addToCart(product)"
-            [class.added]="getCartCount(product.id) > 0">
-            <mat-icon>{{ getCartCount(product.id) > 0 ? 'check' : 'add' }}</mat-icon>
-            <span *ngIf="getCartCount(product.id) === 0">Add to Cart</span>
-            <span *ngIf="getCartCount(product.id) > 0">Added ({{ getCartCount(product.id) }})</span>
+            [class.added]="getCount(product.id) > 0">
+            <mat-icon>{{ getCount(product.id) > 0 ? "check" : "add" }}</mat-icon>
+            <span *ngIf="getCount(product.id) === 0">Add to Cart</span>
+            <span *ngIf="getCount(product.id) > 0">Added ({{ getCount(product.id) }})</span>
           </button>
         </div>
 

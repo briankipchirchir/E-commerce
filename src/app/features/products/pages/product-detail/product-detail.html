@@ -16,16 +16,20 @@
     <div class="pd-gallery">
       <div class="main-image">
         <div class="image-bg">
-          <mat-icon class="big-icon">{{ p.images?.[0] ? "image" : "inventory_2" }}</mat-icon>
+          <img *ngIf="p.images && p.images.length > 0" [src]="p.images?.[selectedImageIndex()] || ''" [alt]="p.name" class="main-img" />
+          <mat-icon *ngIf="!p.images || p.images.length === 0" class="big-icon">inventory_2</mat-icon>
         </div>
         <span class="badge" *ngIf="p.featured" style="background:#00529b">Featured</span>
         <span class="discount-tag" *ngIf="p.originalPrice">-{{ discount }}%</span>
       </div>
-      <!-- Thumbnail strip (same icon for now, images from API later) -->
-      <div class="thumbnails">
-        <div class="thumb active"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
-        <div class="thumb"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
-        <div class="thumb"><mat-icon>{{ p.images?.[0] ? "" : "inventory_2" }}</mat-icon></div>
+      <!-- Thumbnail strip -->
+      <div class="thumbnails" *ngIf="p.images && p.images.length > 1">
+        <div class="thumb"
+          *ngFor="let img of p.images; let i = index"
+          [class.active]="selectedImageIndex() === i"
+          (click)="selectedImageIndex.set(i)">
+          <img [src]="img" [alt]="p.name" />
+        </div>
       </div>
     </div>
 

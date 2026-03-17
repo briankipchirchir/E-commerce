@@ -1,9 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../../../core/services/CartService';
+import { OrderService } from '../../../../core/services/OrderService';
+import { AuthService } from '../../../../core/services/AuthService';
+import { ToastService } from '../../../../core/services/ToastService';
 
 @Component({
   selector: 'app-checkout',
@@ -12,17 +15,29 @@ import { CartService } from '../../../../core/services/CartService';
   templateUrl: './checkout.html',
   styleUrl: './checkout.css'
 })
-export class Checkout {
+export class Checkout implements OnInit {
   cartService = inject(CartService);
+  private orderService = inject(OrderService);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
   router = inject(Router);
 
   step = signal<1 | 2 | 3>(1);
   placing = signal(false);
   orderPlaced = signal(false);
   orderNumber = signal('');
+  iconMap: Record<string, string> = {};
 
-  address = { firstName: '', lastName: '', email: '', phone: '', street: '', city: '', county: '', postalCode: '', country: 'Kenya' };
-  payment = { method: 'card' as 'card' | 'mpesa' | 'cod', cardNumber: '', expiry: '', cvv: '', mpesaPhone: '' };
+  address = {
+    firstName: '', lastName: '', email: '',
+    phone: '', street: '', city: '',
+    county: '', postalCode: '', country: 'Kenya'
+  };
+
+  payment = {
+    method: 'card' as 'card' | 'mpesa' | 'cod',
+    cardNumber: '', expiry: '', cvv: '', mpesaPhone: ''
+  };
 
   readonly SHIPPING_THRESHOLD = 50;
   readonly SHIPPING_COST = 5.99;
@@ -32,8 +47,23 @@ export class Checkout {
   get tax(): number { return this.cartService.subtotal() * this.TAX_RATE; }
   get total(): number { return this.cartService.subtotal() + this.shipping + this.tax; }
 
+  ngOnInit(): void {
+    // Pre-fill from logged in user
+    const user = this.authService.currentUser();
+    if (user) {
+      this.address.firstName = user.firstName || '';
+      this.address.lastName = user.lastName || '';
+      this.address.email = user.email || '';
+    }
+    // Redirect if cart is empty
+    if (this.cartService.cartItems().length === 0) {
+      this.router.navigate(['/products']);
+    }
+  }
+
   get addressValid(): boolean {
-    return !!(this.address.firstName && this.address.lastName && this.address.email && this.address.street && this.address.city);
+    return !!(this.address.firstName && this.address.lastName &&
+              this.address.email && this.address.street && this.address.city);
   }
 
   get paymentValid(): boolean {
@@ -49,22 +79,41 @@ export class Checkout {
 
   placeOrder(): void {
     this.placing.set(true);
-    setTimeout(() => {
-      this.orderNumber.set('ORD-' + Date.now().toString().slice(-8));
-      this.cartService.clearCart();
-      this.placing.set(false);
-      this.orderPlaced.set(true);
-    }, 1800);
+
+    const request = {
+      items: this.cartService.cartItems().map(item => ({
+        productId: Number(item.id),
+        productName: item.name,
+        productImage: item.image,
+        productBrand: '',
+        quantity: item.quantity,
+        unitPrice: item.price
+      })),
+      shippingStreet: this.address.street,
+      shippingCity: this.address.city,
+      shippingCounty: this.address.county,
+      shippingPostalCode: this.address.postalCode,
+      shippingCountry: this.address.country
+    };
+
+    this.orderService.createOrder(request).subscribe({
+      next: (res) => {
+        this.placing.set(false);
+        if (res.success) {
+          this.orderNumber.set(res.data.orderNumber);
+          this.cartService.clearCart();
+          this.orderPlaced.set(true);
+          this.toastService.success('Order placed successfully!');
+        }
+      },
+      error: (err) => {
+        this.placing.set(false);
+        this.toastService.error(err.error?.message || 'Failed to place order. Please try again.');
+      }
+    });
   }
 
   formatCard(val: string): string {
     return val.replace(/\D/g, '').replace(/(\d{4})/g, '$1 ').trim().slice(0, 19);
   }
-
-  iconMap: Record<string, string> = {
-    headphones: 'headphones', watch: 'watch', shoes: 'directions_run',
-    bag: 'shopping_bag', hub: 'hub', chair: 'chair', bottle: 'local_bar',
-    keyboard: 'keyboard', shirt: 'checkroom', organizer: 'table_restaurant',
-    charger: 'battery_charging_full', yoga: 'self_improvement'
-  };
 }

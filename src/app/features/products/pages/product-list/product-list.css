@@ -454,3 +454,22 @@
   .card-image { height: 140px; }
   .product-icon { font-size: 32px; }
 }
+/* ── Mobile fixes ────────────────────────── */
+@media (max-width: 480px) {
+  .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card-body { padding: 10px; }
+  .card-name { font-size: 13px; }
+  .card-desc { display: none; }
+  .price { font-size: 15px; }
+  .card-footer { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .add-btn { width: 100%; justify-content: center; padding: 8px 10px; font-size: 12px; }
+  .rating { display: none; }
+  .card-image { height: 130px; }
+  .low-stock { font-size: 11px; }
+}
+
+@media (max-width: 360px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .card-image { height: 180px; }
+  .card-desc { display: block; }
+}

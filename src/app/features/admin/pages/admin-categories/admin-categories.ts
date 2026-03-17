@@ -1,9 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-
-interface Category { id: string; name: string; slug: string; description: string; productCount: number; isActive: boolean; icon: string; }
+import { ProductService, Category, CategoryRequest } from '../../../../core/services/ProductService';
+import { ToastService } from '../../../../core/services/ToastService';
 
 @Component({
   selector: 'app-admin-categories',
@@ -12,42 +12,94 @@ interface Category { id: string; name: string; slug: string; description: string
   templateUrl: './admin-categories.html',
   styleUrl: './admin-categories.css'
 })
-export class AdminCategories {
-  showForm = signal(false);
-  editingId = signal<string | null>(null);
-  deleteConfirmId = signal<string | null>(null);
+export class AdminCategories implements OnInit {
+  private productService = inject(ProductService);
+  private toastService = inject(ToastService);
 
-  form = { name: '', description: '', icon: 'category', isActive: true };
+  showForm = signal(false);
+  editingId = signal<number | null>(null);
+  deleteConfirmId = signal<number | null>(null);
+  loading = signal(true);
+  saving = signal(false);
+
+  categories = signal<Category[]>([]);
+
   icons = ['devices', 'checkroom', 'watch', 'home', 'sports_soccer', 'local_offer', 'category'];
 
-  categories = signal<Category[]>([
-    { id:'1', name:'Electronics',  slug:'electronics',  description:'Gadgets, devices and tech accessories', productCount:48, isActive:true,  icon:'devices'      },
-    { id:'2', name:'Clothing',     slug:'clothing',     description:'Fashion, apparel and accessories',      productCount:32, isActive:true,  icon:'checkroom'    },
-    { id:'3', name:'Accessories',  slug:'accessories',  description:'Bags, watches, jewelry and more',       productCount:27, isActive:true,  icon:'watch'        },
-    { id:'4', name:'Home',         slug:'home',         description:'Furniture, decor and home essentials',  productCount:19, isActive:true,  icon:'home'         },
-    { id:'5', name:'Sports',       slug:'sports',       description:'Fitness, outdoor and sports gear',      productCount:14, isActive:false, icon:'sports_soccer'},
-  ]);
+  form = { name: '', description: '', imageUrl: '', slug: '' };
 
-  openAdd() { this.form = { name:'', description:'', icon:'category', isActive:true }; this.editingId.set(null); this.showForm.set(true); }
+  ngOnInit(): void { this.loadCategories(); }
 
-  openEdit(c: Category) {
-    this.form = { name: c.name, description: c.description, icon: c.icon, isActive: c.isActive };
+  loadCategories(): void {
+    this.loading.set(true);
+    this.productService.getCategories().subscribe({
+      next: (res) => {
+        this.loading.set(false);
+        if (res.success) this.categories.set(res.data);
+      },
+      error: () => {
+        this.loading.set(false);
+        this.toastService.error('Failed to load categories.');
+      }
+    });
+  }
+
+  openAdd(): void {
+    this.form = { name: '', description: '', imageUrl: '', slug: '' };
+    this.editingId.set(null);
+    this.showForm.set(true);
+  }
+
+  openEdit(c: Category): void {
+    this.form = { name: c.name, description: c.description || '', imageUrl: c.imageUrl || '', slug: c.slug || '' };
     this.editingId.set(c.id);
     this.showForm.set(true);
   }
 
-  save() {
+  save(): void {
     if (!this.form.name) return;
-    const slug = this.form.name.toLowerCase().replace(/\s+/g, '-');
-    if (this.editingId()) {
-      this.categories.update(list => list.map(c => c.id === this.editingId() ? { ...c, ...this.form, slug } : c));
-    } else {
-      this.categories.update(list => [...list, { id: Date.now().toString(), ...this.form, slug, productCount: 0 }]);
-    }
-    this.showForm.set(false);
+    this.saving.set(true);
+
+    const request: CategoryRequest = {
+      name: this.form.name,
+      description: this.form.description,
+      imageUrl: this.form.imageUrl,
+      slug: this.form.slug || this.form.name.toLowerCase().replace(/\s+/g, '-')
+    };
+
+    const action$ = this.editingId()
+      ? this.productService.updateCategory(this.editingId()!, request)
+      : this.productService.createCategory(request);
+
+    action$.subscribe({
+      next: (res) => {
+        this.saving.set(false);
+        if (res.success) {
+          this.toastService.success(this.editingId() ? 'Category updated!' : 'Category created!');
+          this.showForm.set(false);
+          this.loadCategories();
+        }
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.toastService.error(err.error?.message || 'Failed to save category.');
+      }
+    });
   }
 
-  toggleActive(id: string) { this.categories.update(list => list.map(c => c.id === id ? { ...c, isActive: !c.isActive } : c)); }
-  confirmDelete(id: string) { this.deleteConfirmId.set(id); }
-  deleteCategory() { this.categories.update(list => list.filter(c => c.id !== this.deleteConfirmId())); this.deleteConfirmId.set(null); }
+  confirmDelete(id: number): void { this.deleteConfirmId.set(id); }
+  cancelDelete(): void { this.deleteConfirmId.set(null); }
+
+  deleteCategory(): void {
+    const id = this.deleteConfirmId();
+    if (!id) return;
+    this.productService.deleteCategory(id).subscribe({
+      next: () => {
+        this.toastService.success('Category deleted.');
+        this.categories.update(list => list.filter(c => c.id !== id));
+        this.deleteConfirmId.set(null);
+      },
+      error: () => this.toastService.error('Failed to delete category.')
+    });
+  }
 }
