@@ -50,7 +50,7 @@ export class Login {
             response.data.role === 'ADMIN'
               ? this.router.navigate(['/admin'])
               : this.router.navigate(['/']);
-          }, 1000);
+          }, 5000);
         }
       },
       error: (err) => {
