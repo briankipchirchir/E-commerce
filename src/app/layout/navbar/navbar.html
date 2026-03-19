@@ -14,9 +14,6 @@
 
     <!-- Brand -->
     <a routerLink="/products" class="brand">
-      <!-- <div class="brand-icon">
-        <mat-icon>bolt</mat-icon>
-      </div> -->
       <div class="brand-text">
         <span class="brand-name">ShopSmart</span>
         <span class="brand-tagline">Premium Store</span>
@@ -65,7 +62,7 @@
       </button>
 
       <!-- Orders (only if logged in) -->
-      <a routerLink="/orders" class="action-pill" *ngIf="isLoggedIn" matTooltip="My Orders">
+      <a routerLink="/orders" class="action-pill" *ngIf="isLoggedIn()" matTooltip="My Orders">
         <mat-icon>receipt_long</mat-icon>
         <span class="pill-label">Orders</span>
       </a>
@@ -78,16 +75,18 @@
         </div>
         <div class="cart-text">
           <span class="cart-label">My Cart</span>
-          <span class="cart-count">{{ cartCount() }} item{{ cartCount() !== 1 ? 's' : '' }}</span>
+          <span class="cart-count">
+            {{ cartCount() }} item{{ cartCount() !== 1 ? 's' : '' }}
+          </span>
         </div>
       </a>
 
       <!-- LOGGED IN: user pill -->
-      <button class="user-btn" *ngIf="isLoggedIn; else guestButtons" [matMenuTriggerFor]="userMenu">
-        <div class="user-avatar">{{ initials }}</div>
+      <button class="user-btn" *ngIf="isLoggedIn(); else guestButtons" [matMenuTriggerFor]="userMenu">
+        <div class="user-avatar">{{ initials() }}</div>
         <div class="user-text">
           <span class="user-greeting">Hello,</span>
-          <span class="user-name">{{ firstName }}</span>
+          <span class="user-name">{{ firstName() }}</span>
         </div>
         <mat-icon class="user-chevron">expand_more</mat-icon>
       </button>
@@ -101,7 +100,7 @@
       <!-- User dropdown -->
       <mat-menu #userMenu="matMenu" xPosition="before">
         <div class="menu-header">
-          <div class="menu-avatar">{{ initials }}</div>
+          <div class="menu-avatar">{{ initials() }}</div>
           <div>
             <div class="menu-name">{{ userName() }}</div>
             <div class="menu-email">{{ userEmail() }}</div>
@@ -129,23 +128,5 @@
     </div>
 
   </header>
-
-  <!-- Category nav bar -->
-  <!-- <nav class="category-nav">
-    <div class="cat-nav-inner">
-      <a class="cat-link" routerLink="/products"
-        routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <mat-icon>apps</mat-icon> All Products
-      </a>
-      <a class="cat-link" *ngFor="let cat of categories"
-        [routerLink]="['/products']" [queryParams]="{category: cat.param}"
-        routerLinkActive="active">
-        <mat-icon>{{ cat.icon }}</mat-icon> {{ cat.label }}
-      </a>
-      <a class="cat-link deal-link" routerLink="/products" [queryParams]="{filter: 'deals'}">
-        <mat-icon>local_fire_department</mat-icon> Today's Deals
-      </a>
-    </div>
-  </nav> -->
 
 </div>
