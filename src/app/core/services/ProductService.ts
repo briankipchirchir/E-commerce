@@ -74,8 +74,8 @@ export interface CategoryRequest {
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private http = inject(HttpClient);
-  private readonly PRODUCT_URL = `${environment.productServiceUrl}/api/products`;
-  private readonly CATEGORY_URL = `${environment.productServiceUrl}/api/categories`;
+  private readonly PRODUCT_URL = `${environment.apiGatewayUrl}/api/products`;
+  private readonly CATEGORY_URL = `${environment.apiGatewayUrl}/api/categories`;
 
   // ── Products ──────────────────────────────────────────
   getProducts(page = 0, size = 12, sortBy = 'createdAt'): Observable<ApiResponse<PagedResult<Product>>> {

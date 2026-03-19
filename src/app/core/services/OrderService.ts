@@ -75,7 +75,7 @@ export interface PagedResult<T> {
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private readonly ORDER_URL = `${environment.orderServiceUrl}/api/orders`;
+  private readonly ORDER_URL = `${environment.apiGatewayUrl}/api/orders`;
   
 
   createOrder(request: CreateOrderRequest): Observable<ApiResponse<Order>> {
