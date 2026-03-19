@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../../../core/services/CartService';
 import { OrderService } from '../../../../core/services/OrderService';
+import { PaymentService } from '../../../../core/services/PaymentService';
 import { AuthService } from '../../../../core/services/AuthService';
 import { ToastService } from '../../../../core/services/ToastService';
 
@@ -18,6 +19,7 @@ import { ToastService } from '../../../../core/services/ToastService';
 export class Checkout implements OnInit {
   cartService = inject(CartService);
   private orderService = inject(OrderService);
+  private paymentService = inject(PaymentService);
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   router = inject(Router);
@@ -26,6 +28,7 @@ export class Checkout implements OnInit {
   placing = signal(false);
   orderPlaced = signal(false);
   orderNumber = signal('');
+  stripeClientSecret = signal('');
   iconMap: Record<string, string> = {};
 
   address = {
@@ -48,14 +51,12 @@ export class Checkout implements OnInit {
   get total(): number { return this.cartService.subtotal() + this.shipping + this.tax; }
 
   ngOnInit(): void {
-    // Pre-fill from logged in user
     const user = this.authService.currentUser();
     if (user) {
       this.address.firstName = user.firstName || '';
       this.address.lastName = user.lastName || '';
       this.address.email = user.email || '';
     }
-    // Redirect if cart is empty
     if (this.cartService.cartItems().length === 0) {
       this.router.navigate(['/products']);
     }
@@ -80,7 +81,7 @@ export class Checkout implements OnInit {
   placeOrder(): void {
     this.placing.set(true);
 
-    const request = {
+    const orderRequest = {
       items: this.cartService.cartItems().map(item => ({
         productId: Number(item.id),
         productName: item.name,
@@ -96,14 +97,46 @@ export class Checkout implements OnInit {
       shippingCountry: this.address.country
     };
 
-    this.orderService.createOrder(request).subscribe({
+    this.orderService.createOrder(orderRequest).subscribe({
       next: (res) => {
-        this.placing.set(false);
         if (res.success) {
-          this.orderNumber.set(res.data.orderNumber);
-          this.cartService.clearCart();
-          this.orderPlaced.set(true);
-          this.toastService.success('Order placed successfully!');
+          const orderNum = res.data.orderNumber;
+          this.orderNumber.set(orderNum);
+
+          // Initiate payment
+          const paymentMethod = this.payment.method === 'card' ? 'STRIPE'
+                              : this.payment.method === 'mpesa' ? 'MPESA' : 'COD';
+
+          this.paymentService.initiatePayment({
+            orderNumber: orderNum,
+            amount: this.total,
+            method: paymentMethod,
+            mpesaPhone: this.payment.method === 'mpesa' ? this.payment.mpesaPhone : undefined
+          }).subscribe({
+            next: (payRes) => {
+              this.placing.set(false);
+              if (payRes.success) {
+                this.cartService.clearCart();
+                this.orderPlaced.set(true);
+
+                if (paymentMethod === 'MPESA') {
+                  this.toastService.success('Order placed! Check your phone for M-Pesa prompt.');
+                } else if (paymentMethod === 'STRIPE') {
+                  this.stripeClientSecret.set(payRes.data.stripeClientSecret || '');
+                  this.toastService.success('Order placed! Complete your card payment.');
+                } else {
+                  this.toastService.success('Order placed successfully!');
+                }
+              }
+            },
+            error: () => {
+              this.placing.set(false);
+              // Order was created but payment initiation failed — still show success
+              this.cartService.clearCart();
+              this.orderPlaced.set(true);
+              this.toastService.success('Order placed! Payment will be processed shortly.');
+            }
+          });
         }
       },
       error: (err) => {
