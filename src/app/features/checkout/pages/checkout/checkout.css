@@ -744,3 +744,44 @@ input::placeholder { color: #94a3b8; }
   .checkout-header   { padding: 10px 12px; }
   .step-line         { max-width: 24px; margin: 0 2px; margin-bottom: 18px; }
 }
+
+
+
+.payment-logos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.payment-logos img {
+  height: 20px;
+  width: auto;
+  filter: grayscale(100%); /* optional clean look */
+}
+
+.mpesa-logo {
+  height: 22px;
+  width: auto;
+}
+
+.cod-icon {
+  height: 20px;
+  width: auto;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.payment-option.selected {
+  border-color: #00529b;
+  background: rgba(0,82,155,0.05);
+}

@@ -113,23 +113,48 @@
       <div class="form-card" *ngIf="step() === 2">
         <h2><mat-icon>payment</mat-icon> Payment Method</h2>
 
+      
         <div class="payment-options">
-          <label class="payment-option" [class.selected]="payment.method === 'card'">
-            <input type="radio" [(ngModel)]="payment.method" value="card" />
-            <mat-icon>credit_card</mat-icon>
-            <span>Credit / Debit Card</span>
-          </label>
-          <label class="payment-option" [class.selected]="payment.method === 'mpesa'">
-            <input type="radio" [(ngModel)]="payment.method" value="mpesa" />
-            <mat-icon>phone_android</mat-icon>
-            <span>M-Pesa</span>
-          </label>
-          <label class="payment-option" [class.selected]="payment.method === 'cod'">
-            <input type="radio" [(ngModel)]="payment.method" value="cod" />
-            <mat-icon>local_shipping</mat-icon>
-            <span>Cash on Delivery</span>
-          </label>
-        </div>
+
+  <!-- CARD -->
+  <label class="payment-option" [class.selected]="payment.method === 'card'">
+    <input type="radio" [(ngModel)]="payment.method" value="card" />
+
+    <div class="payment-logos">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAfCAMAAACF8f6iAAAAdVBMVEX///8UNMsAJMkAKspca9YALMoAJskAD8cIL8oAIMgAHcioreYAFMextumiqOUAAMaMlN9GV9G+wuxLXNLv8Pp7hdxlctf6+/7Cxu3f4fbm6PiVnOLO0fHV1/PZ3PSco+RWZtU5TdCBit0tRM5vetkfOswnP839FUl8AAAB00lEQVQ4je1TW4KDIAwkIIKIj/q2rda27t7/iJsE63KE/dj5aIlJJiQThPjHn8KjbbcEkQfzjkY7ihZ/ZzS7R+uMf/YLO+chSbbikzlOQ6W1ria2EqnlIGajtSFWk1oAsL5kp1RayySqelUAqqZT5wH8IgoJ9iLEDS0rM6n8Ss4iQxJQ8X1rBbbli6dgn0L0ioi6CkBfiql4GY56UnXw1yjx7vADHdCRYRNvC1nDFexv0Oopjxy/GH1gmpAgPc2HxLD7GbQrJJVHTx+0XEJsGtI6XEAjDZXwfRdCsH27jebo6RQlhfTGTfmOLT3g10tKwzCPTwhyf2GFOHFxSCduR8KgQbIAiad5uI3OOHk30n39HGc6mrNlLQT9u9Db9E0SONyOxoHqBQklizgxwSI5qvcmWbG3ajwcJVJSWxcLab6uNJ0+TsQkOLQQTRYIAlBTlHamQaXOYVjkQ8xBJElnXAdibXhdSHa1U/qJ8zYMzevEGuGtqI/WfO2vXWHDZiFlrSHIs/8DO1F61swATw5DtCI+/xJlWF4RplPGiYWR0vHmL5WUuJzXKsPHoJWj6lkmTXh4c3WEfdCVeV6yQiueaEZdU+/JXtNzu5Lz2CA85uIffws/lusXjWNFJpAAAAAASUVORK5CYII=" alt="Visa" />
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAAiCAMAAAA9FerRAAAApVBMVEXrABv3nhv/////XwDqAAD2lQD3oBz/XADrABf3mgD/YwD3nRX2ohzwKhb5kBf5u3b5zs/2rK771a796+vrABD6wYP61tf6vHL+VgD3mhr82bX++vr8dQ384+T+8OP5Tgz4xMX6x5HzNxP6hhP5tGPtMTr7fRD0l5rwZmvtO0PrEiPsIS7uTFPxeHz4rlT3oy34qUP95tD3trjzjZDvXGL2QxDygYVt9sbkAAABQ0lEQVQ4jaXV6VKDMBAA4A1JSkLUHoLFHvTQaj2wBY/3fzSTokBhwZl1fzEZvtnNueDVYvS4f3qGl9d0vKwGk8nw7cAGx+kmq/8L5df1lxAiVABKhULsxsXo5CC1MYwxY7TWUdKGlllUhhJq7Xkzph0qQ8uoAW+UgEYosZ/KM3aiJqvD/Czbr4z57aAJmZGzCuatdM5xG4hkhXRwhDnwHQwQyGRWwDlWJ6yc4/7iog2NLmCKJbwMTpDHV0hOPXRwiRYa858IkJRMJhamYU9CW2xHSvDQhCtewgW6Ph6sUcir8DGoM3jvW5ruWjfwgU1xW4d3CDT3sMM28bNe6gMGj9gEGxBdHUaH5FLJi0PeDvIBIB+5/lvVd8jJ14p8kSlPx/x/jxX9eaQ/yPQWgDad3DYd81fT6W1zurfNuehorBHWWL8BTq4f7qUiaFsAAAAASUVORK5CYII=" alt="Mastercard" />
+    </div>
+
+    <span>Credit / Debit Card</span>
+  </label>
+
+  <!-- MPESA -->
+  <label class="payment-option" [class.selected]="payment.method === 'mpesa'">
+    <input type="radio" [(ngModel)]="payment.method" value="mpesa" />
+
+    <img 
+      class="mpesa-logo"
+      src="data:image/png;base64,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"
+      alt="M-Pesa"
+    />
+
+    <span>M-Pesa</span>
+  </label>
+
+  <!-- COD -->
+  <label class="payment-option" [class.selected]="payment.method === 'cod'">
+    <input type="radio" [(ngModel)]="payment.method" value="cod" />
+
+    <img 
+      class="cod-icon"
+      src="https://cdn-icons-png.flaticon.com/512/2331/2331943.png"
+      alt="Cash"
+    />
+
+    <span>Cash on Delivery</span>
+  </label>
+
+</div>
 
         <!-- Card fields -->
         <div *ngIf="payment.method === 'card'" class="payment-fields">
