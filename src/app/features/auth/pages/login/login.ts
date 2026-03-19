@@ -30,34 +30,35 @@ export class Login {
     this.showPassword.update(v => !v);
   }
 
-  onSubmit(): void {
-    if (!this.email || !this.password) {
-      this.error = 'Please fill in all fields.';
-      this.toastService.warning('Please fill in all fields.');
-      return;
-    }
-    this.loading = true;
-    this.error = '';
-
-    const request: LoginRequest = { email: this.email, password: this.password };
-
-    this.authService.login(request).subscribe({
-      next: (response) => {
-        this.loading = false;
-        if (response.success) {
-          this.toastService.success(`Welcome back, ${response.data.firstName}!`);
-          setTimeout(() => {
-            response.data.role === 'ADMIN'
-              ? this.router.navigate(['/admin'])
-              : this.router.navigate(['/']);
-          }, 5000);
-        }
-      },
-      error: (err) => {
-        this.loading = false;
-        this.error = err.error?.message || 'Invalid email or password.';
-        this.toastService.error(this.error);
-      }
-    });
+ onSubmit(): void {
+  if (!this.email || !this.password) {
+    this.error = 'Please fill in all fields.';
+    this.toastService.warning('Please fill in all fields.');
+    return;
   }
+  this.loading = true;
+  this.error = '';
+
+  const request: LoginRequest = { email: this.email, password: this.password };
+
+  this.authService.login(request).subscribe({
+    next: (response) => {
+      this.loading = false;
+      if (response.success) {
+        this.toastService.success(`Welcome back, ${response.data.firstName}!`);
+        // ← was 5000, reduced to 800 just to let toast show
+        setTimeout(() => {
+          response.data.role === 'ADMIN'
+            ? this.router.navigate(['/admin'])
+            : this.router.navigate(['/products']);
+        }, 800);
+      }
+    },
+    error: (err) => {
+      this.loading = false;
+      this.error = err.error?.message || 'Invalid email or password.';
+      this.toastService.error(this.error);
+    }
+  });
+}
 }
