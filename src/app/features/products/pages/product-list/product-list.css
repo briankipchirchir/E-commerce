@@ -473,3 +473,143 @@
   .card-image { height: 180px; }
   .card-desc { display: block; }
 }
+
+/* ── Pagination ──────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  min-width: 38px;
+  height: 38px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  background: white;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0 10px;
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: #00529b;
+  color: #00529b;
+  background: rgba(0, 82, 155, 0.05);
+}
+
+.page-btn.active {
+  background: #00529b;
+  border-color: #00529b;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 82, 155, 0.3);
+}
+
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.page-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Loading state ───────────────────────── */
+.loading-state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #94a3b8;
+}
+
+.loading-state mat-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Hero search responsive ──────────────── */
+@media (max-width: 600px) {
+  .hero-search {
+    flex-direction: column;
+    padding: 12px;
+    gap: 10px;
+    border-radius: 16px;
+  }
+
+  .hero-search mat-icon {
+    display: none;
+  }
+
+  .hero-search-input {
+    width: 100%;
+    padding: 6px 4px;
+  }
+
+  .hero-search-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .hero h1 { font-size: 24px; }
+  .hero p  { font-size: 14px; }
+  .hero-tag { font-size: 12px; }
+}
+
+/* ── Category strip mobile ───────────────── */
+@media (max-width: 600px) {
+  .category-strip {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .category-strip::-webkit-scrollbar { display: none; }
+
+  .cat-pill {
+    flex-shrink: 0;
+    font-size: 12.5px;
+    padding: 7px 14px;
+  }
+}
+
+/* ── Toolbar mobile ──────────────────────── */
+@media (max-width: 480px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* ── Pagination mobile ───────────────────── */
+@media (max-width: 480px) {
+  .page-btn {
+    min-width: 34px;
+    height: 34px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+}

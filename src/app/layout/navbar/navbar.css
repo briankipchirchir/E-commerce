@@ -10,6 +10,9 @@
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
   transition: box-shadow 0.3s;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .navbar-wrapper.scrolled {
@@ -20,17 +23,19 @@
    PROMO BAR
 ═══════════════════════════════════════════ */
 .promo-bar {
-   background: #00529b;
+  background: #00529b;
   color: rgba(255, 255, 255, 0.92);
   font-size: 12.5px;
   font-weight: 500;
   text-align: center;
-  padding: 8px 24px;
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   letter-spacing: 0.1px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .promo-bar .divider { opacity: 0.35; }
@@ -44,8 +49,10 @@
   height: 68px;
   display: flex;
   align-items: center;
-  padding: 0 28px;
-  gap: 16px;
+  padding: 0 16px;
+  gap: 10px;
+  width: 100%;
+  overflow: hidden;
 }
 
 /* ═══════════════════════════════════════════
@@ -64,7 +71,7 @@
   width: 38px;
   height: 38px;
   border-radius: 11px;
-   background: #00529b;
+  background: #00529b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,7 +81,6 @@
 
 .brand:hover .brand-icon {
   transform: scale(1.06);
-  
 }
 
 .brand-icon mat-icon { color: white; font-size: 22px; }
@@ -195,7 +201,7 @@
   width: 36px;
   height: 34px;
   border: none;
-   background: #00529b;
+  background: #00529b;
   border-radius: 9px;
   display: flex;
   align-items: center;
@@ -255,18 +261,18 @@
   align-items: center;
   gap: 10px;
   padding: 7px 16px 7px 10px;
-   background: #00529b;
+  background: #00529b;
   border-radius: 12px;
   text-decoration: none;
   color: white;
   transition: all 0.2s;
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
 }
 
 .cart-btn:hover {
-   background: #00529b;
+  background: #00529b;
   transform: translateY(-1px);
-  
 }
 
 .cart-icon-wrap {
@@ -311,6 +317,7 @@
   padding: 6px 10px 6px 6px;
   cursor: pointer;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .user-btn:hover {
@@ -322,7 +329,7 @@
   width: 33px;
   height: 33px;
   border-radius: 8px;
-   background: #00529b;
+  background: #00529b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,7 +357,7 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-   background: #00529b;
+  background: #00529b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -374,7 +381,7 @@
 .cat-nav-inner {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   gap: 2px;
@@ -407,37 +414,7 @@
 .deal-link:hover { background: rgba(239, 68, 68, 0.08); color: #dc2626; }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════ */
-@media (max-width: 1100px) {
-  .cart-text { display: none; }
-  .cart-btn { padding: 9px; }
-}
-
-@media (max-width: 960px) {
-  .action-pill .pill-label { display: none; }
-  .action-pill { padding: 8px 10px; }
-  .user-text { display: none; }
-  .user-chevron { display: none !important; }
-  .user-btn { padding: 6px; }
-}
-
-@media (max-width: 768px) {
-  .navbar { padding: 0 16px; gap: 10px; }
-  .search-category-picker, .search-divider { display: none; }
-  .cat-nav-inner { padding: 0 16px; }
-  .promo-bar { font-size: 11px; gap: 8px; }
-  .brand-tagline { display: none; }
-}
-
-@media (max-width: 560px) {
-  .search-wrap { display: none; }
-  .action-pill { display: none; }
-  .promo-bar span:not(:first-child) { display: none; }
-}
-
-/* ═══════════════════════════════════════════
-   GUEST BUTTONS (logged out state)
+   GUEST BUTTONS
 ═══════════════════════════════════════════ */
 .btn-signin {
   display: flex;
@@ -452,6 +429,7 @@
   text-decoration: none;
   transition: all 0.2s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .btn-signin:hover {
@@ -466,18 +444,102 @@
   padding: 8px 18px;
   border: none;
   border-radius: 10px;
-   background: #00529b;
+  background: #00529b;
   font-size: 13.5px;
   font-weight: 600;
   color: white;
   text-decoration: none;
   transition: all 0.2s;
   white-space: nowrap;
-  
+  flex-shrink: 0;
 }
 
 .btn-register:hover {
-  background: #00529b;
+  background: #003d75;
   transform: translateY(-1px);
-  
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 1100px
+═══════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .cart-text { display: none; }
+  .cart-btn { padding: 9px; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 960px
+═══════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .action-pill .pill-label { display: none; }
+  .action-pill { padding: 8px 10px; }
+  .user-text { display: none; }
+  .user-chevron { display: none !important; }
+  .user-btn { padding: 6px; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 768px
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .navbar { padding: 0 12px; gap: 8px; }
+  .search-category-picker, .search-divider { display: none; }
+  .cat-nav-inner { padding: 0 12px; }
+  .promo-bar { font-size: 11.5px; gap: 8px; padding: 7px 12px; }
+  .brand-tagline { display: none; }
+  .brand-name { font-size: 15px; }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 560px
+═══════════════════════════════════════════ */
+@media (max-width: 560px) {
+  .search-wrap { display: none; }
+  .action-pill { display: none; }
+
+  .promo-bar {
+    padding: 7px 12px;
+    font-size: 11.5px;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  .promo-bar span:not(:first-child) { display: none; }
+
+  .promo-bar span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .navbar {
+    height: 58px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .cart-btn {
+    padding: 7px 10px;
+  }
+
+  .btn-signin,
+  .btn-register {
+    padding: 7px 12px;
+    font-size: 12.5px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE — 380px
+═══════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .btn-signin { display: none; }
+  .brand-tagline { display: none; }
+  .navbar { gap: 6px; }
+
+  .btn-register {
+    padding: 7px 10px;
+    font-size: 12px;
+  }
 }

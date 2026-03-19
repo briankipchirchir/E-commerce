@@ -16,7 +16,6 @@ import { ToastService } from '../../../../core/services/ToastService';
 export class AdminProducts implements OnInit {
   private productService = inject(ProductService);
   private toastService = inject(ToastService);
-  private productService2 = inject(ProductService);
   categoriesList = signal<any[]>([]);
 
   products = signal<Product[]>([]);
@@ -33,7 +32,8 @@ export class AdminProducts implements OnInit {
   ngOnInit(): void { this.loadProducts(); this.loadCategories(); }
 
   loadCategories(): void {
-    this.productService.getCategories().subscribe({ next: (res) => { if (res.success) this.categoriesList.set(res.data); } });
+    this.productService.getCategories().subscribe({ next: 
+      (res) => { if (res.success) this.categoriesList.set(res.data); } });
   }
 
   loadProducts(): void {
